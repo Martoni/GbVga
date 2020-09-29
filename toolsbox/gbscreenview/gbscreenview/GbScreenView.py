@@ -13,6 +13,7 @@ class GbScreenView(object):
             "#8BAC0F",
             "#306230",
             "#9BBC0F"]
+    GBSIZE = (160, 144)
     # Black
     #COLOR = ["#000000", "#555555", "#AAAAAA", "#FFFFFF"]
 
@@ -48,10 +49,10 @@ class GbScreenView(object):
             vsync_old = 0
             hsync_old = 0
             self._wait_vsync(freader)
-            for j in range(140):
+            for j in range(self.GBSIZE[1]):
                 self._wait_hsync(freader)
                 line = []
-                for i in range(160):
+                for i in range(self.GBSIZE[0]):
                     line.append(self._wait_clk_fall(freader))
                 self.image.append(line)
 
@@ -59,12 +60,14 @@ class GbScreenView(object):
         if self.image == []:
             raise Exception("Read data first")
         square = 3 
-        im = Image.new("RGB", (160*square, 140*square), "#000000")
+        im = Image.new("RGB",
+                       (self.GBSIZE[0]*square, self.GBSIZE[1]*square),
+                       "#000000")
         d = ImageDraw.Draw(im)
         color = list(self.COLOR)
         color.reverse()
-        for j in range(140):
-            for i in range(160):
+        for j in range(self.GBSIZE[1]):
+            for i in range(self.GBSIZE[0]):
                 d.rectangle([(i*square, j*square),
                              (i*square+(square-1), j*square+(square-1))],
                              fill=color[int(self.image[j][i], 2)])
