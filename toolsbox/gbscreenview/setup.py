@@ -28,5 +28,5 @@ setup(
     scripts=['bin/gbscreenview'],
 
     # Run-time dependencies
-    install_requires=[],
+    install_requires=['Pillow'],
 )
