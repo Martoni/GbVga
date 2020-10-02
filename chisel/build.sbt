@@ -43,10 +43,11 @@ resolvers ++= Seq(
 // Provide a managed dependency on X if -DXVersion="" is supplied on the command line.
 val defaultVersions = Map(
   "chisel3" -> "3.4.+",
-  "chisel-iotesters" -> "1.3.+"
+  "chisel-iotesters" -> "1.3.+",
+  "chisel-formal" -> "0.1-SNAPSHOT",
   )
 
-libraryDependencies ++= Seq("chisel3","chisel-iotesters").map {
+libraryDependencies ++= Seq("chisel3","chisel-iotesters","chisel-formal").map {
 dep: String => "edu.berkeley.cs" %% dep % sys.props.getOrElse(dep + "Version", defaultVersions(dep)) }
 
 scalacOptions ++= Seq("-deprecation", "-feature")
