@@ -27,6 +27,8 @@ class TestGbWrite(object):
         self.log = dut._log
         self.clk = dut.clock
         self.rst = dut.reset
+        self._clock_thread = cocotb.fork(
+                Clock(self.clk, *self.CLK_PER).start())
 
     @classmethod
     def freq(cls, clkper):
@@ -50,8 +52,9 @@ class TestGbWrite(object):
 async def minimal_clocking(dut):
     fname = "minimal_clocking"
     tgw = TestGbWrite(dut)
-    tgw.log.info("Running test {}".format(fname))
     tgw.display_config()
+    await Timer(1)
+    tgw.log.info("Running test {}".format(fname))
     await tgw.reset()
     await Timer(1, units="us")
     tgw.log.info("End of {} test".format(fname))
