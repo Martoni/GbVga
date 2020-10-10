@@ -21,7 +21,6 @@ class GbWrite (val datawidth: Int = 8) extends Module { //with Formal {
     val Mwrite = Output(Bool())
   })
 
-  val colCount = RegInit(0.U(log2Ceil(GBWITH).W))
   val lineCount = RegInit(0.U(log2Ceil(GBHEIGHT).W))
   val pixelCount = RegInit(3.U(3.W))
   val byteCount = RegInit(0.U(log2Ceil(GBWITH/4).W))
@@ -32,14 +31,12 @@ class GbWrite (val datawidth: Int = 8) extends Module { //with Formal {
   /* Reset lines an column on GBVsync */
   when(risingedge(io.GBVsync)) {
     lineCount := 0.U
-    colCount := 0.U
     byteCount := 0.U
   }
 
   /* change lines on GBHsync */
   when(fallingedge(io.GBHsync)) {
     lineCount := lineCount + 1.U
-    colCount := 0.U
     byteCount := 0.U
   }
 
