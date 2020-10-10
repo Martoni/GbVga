@@ -21,14 +21,42 @@ class GbWrite (val datawidth: Int = 8) extends Module { //with Formal {
     val Mwrite = Output(Bool())
   })
 
-  /*XXX change this */
-  io.Maddr  := DontCare
-  io.Mdata  := DontCare
-  io.Mwrite := DontCare
+  val colCount = RegInit(0.U(log2Ceil(GBWITH).W))
+  val lineCount = RegInit(0.U(log2Ceil(GBHEIGHT).W))
+  val pixelCount = RegInit(3.U(3.W))
+  val byteCount = RegInit(0.U(log2Ceil(GBWITH/4).W))
 
-//  past(io.Mdata, 1) (pastIOMdata => {
-//    assert(io.Mdata >= pastIOMdata)
-//  })
+  val pixelZero = VecInit(Seq.fill(4)(0.U(2.W)))
+  val pixel = RegInit(pixelZero)
+
+  /* Reset lines an column on GBVsync */
+  when(risingedge(io.GBVsync)) {
+    lineCount := 0.U
+    colCount := 0.U
+    byteCount := 0.U
+  }
+
+  /* change lines on GBHsync */
+  when(fallingedge(io.GBHsync)) {
+    lineCount := lineCount + 1.U
+    colCount := 0.U
+    byteCount := 0.U
+  }
+
+  /* read pixel on GBClk fall */
+  io.Mwrite := false.B
+  when(fallingedge(io.GBClk)) {
+    pixel(pixelCount) := io.GBData
+    pixelCount := pixelCount - 1.U
+    when(pixelCount === 0.U) {
+      byteCount := byteCount + 1.U
+      pixelCount := 3.U
+      io.Mwrite := true.B
+    }
+  }
+
+  io.Maddr := lineCount*GBWITH.U + pixelCount
+  io.Mdata := pixel.asUInt
 }
 
 object GbWriteDriver extends App {

@@ -1,11 +1,11 @@
 
-#SIM=verilator
-SIM=icarus
+SIM=verilator
+#SIM=icarus
 
 ifeq ($(SIM),verilator)
 COMPILE_ARGS=-DCOCOTB_VERILATOR
 export COCOTB_HDL_TIMEPRECISION=1ns
-EXTRA_ARGS += --trace --trace-structs --coverage
+#EXTRA_ARGS += --trace
 endif
 
 ifeq ($(SIM),icarus)
