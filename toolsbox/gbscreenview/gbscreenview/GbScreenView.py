@@ -3,16 +3,14 @@ import csv
 import getopt
 import serial
 import logging
+from cocotb.triggers import Timer
+
 from PIL import Image, ImageDraw
 
 class GbScreenView(object):
     # Color from wikipedia  Game_Boy page
     # Green
-    COLOR = [
-            "#0F380F",
-            "#8BAC0F",
-            "#306230",
-            "#9BBC0F"]
+    COLOR = ["#0F380F", "#8BAC0F", "#306230", "#9BBC0F"]
     GBSIZE = (160, 144)
     # Black
     #COLOR = ["#000000", "#555555", "#AAAAAA", "#FFFFFF"]
@@ -40,7 +38,7 @@ class GbScreenView(object):
                 return strvalue
             old_clk = clk
 
-    def read_csv(self, filename):
+    def csv_2_image(self, filename):
         """ Read first image """
         with open(filename) as csvfile:
             freader = csv.reader(csvfile, delimiter=',')
@@ -55,6 +53,13 @@ class GbScreenView(object):
                 for i in range(self.GBSIZE[0]):
                     line.append(self._wait_clk_fall(freader))
                 self.image.append(line)
+
+
+    def read_csv(self, filename):
+        """ Read first image """
+        print("Warning: read_csv() is deprecated, use csv_2_image() instead")
+        self.csv_2_image(filename)
+
 
     def show(self):
         if self.image == []:
@@ -72,3 +77,23 @@ class GbScreenView(object):
                              (i*square+(square-1), j*square+(square-1))],
                              fill=color[int(self.image[j][i], 2)])
         im.show()
+
+    async def gen_waves(self, shsync, svsync, sclk, sdata, log, filename):
+        with open(filename) as csvfile:
+            freader = csv.reader(csvfile, delimiter=',')
+            print("titles")
+            print(next(freader))
+            curtime, hsync, d1, clk, d0, vsync =  next(freader)
+            shsync <= int(hsync)
+            svsync <= int(vsync)
+            sdata <= int(d1)*2 + int(d0)
+            sclk <= int(clk)
+            oldtime = int(float(curtime)*1.e9)
+            for curtime, hsync, d1, clk, d0, vsync in freader:
+                newtime = int(float(curtime)*1.e9)
+                await Timer(newtime - oldtime, units="ns")
+                shsync <= int(hsync)
+                svsync <= int(vsync)
+                sdata <= int(d1)*2 + int(d0)
+                sclk <= int(clk)
+                oldtime = int(float(curtime)*1.e9)

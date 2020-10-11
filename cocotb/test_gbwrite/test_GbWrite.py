@@ -16,12 +16,14 @@ from cocotb.result import raise_error
 from cocotb.triggers import RisingEdge
 from cocotb.triggers import FallingEdge
 from cocotb.triggers import ClockCycles
+from gbscreenview import GbScreenView
 
 
 class TestGbWrite(object):
     #CLK_PER = (40, "ns") #25Mhz
     CLK_PER = (125, "ns") #8Mhz
-    
+    CSV_FILENAME = "../../assets/screenshoot/beautyandbeast.csv"
+
     def __init__(self, dut):
         self._dut = dut
         self.log = dut._log
@@ -29,6 +31,7 @@ class TestGbWrite(object):
         self.rst = dut.reset
         self._clock_thread = cocotb.fork(
                 Clock(self.clk, *self.CLK_PER).start())
+        self._gsv = GbScreenView()
 
     @classmethod
     def freq(cls, clkper):
@@ -46,6 +49,14 @@ class TestGbWrite(object):
         self.rst <= 1
         await Timer(100, units="ns")
         self.rst <= 0
+        self._gbsigs = cocotb.fork(self._gsv.gen_waves(
+                        self._dut.io_GBHsync,
+                        self._dut.io_GBVsync,
+                        self._dut.io_GBClk,
+                        self._dut.io_GBData,
+                        self.log,
+                        self.CSV_FILENAME))
+
         await RisingEdge(self.clk)
 
 @cocotb.test()
@@ -56,5 +67,5 @@ async def minimal_clocking(dut):
     await Timer(1)
     tgw.log.info("Running test {}".format(fname))
     await tgw.reset()
-    await Timer(1, units="us")
+    await Timer(17, units="ms")
     tgw.log.info("End of {} test".format(fname))
