@@ -32,6 +32,8 @@ class TestGbWrite(object):
         self._clock_thread = cocotb.fork(
                 Clock(self.clk, *self.CLK_PER).start())
         self._gsv = GbScreenView()
+        self._td = cocotb.fork(
+                self.time_display(step=(1, "ms")))
 
     @classmethod
     def freq(cls, clkper):
@@ -44,6 +46,13 @@ class TestGbWrite(object):
 
     def display_config(self):
         self.log.info("Freq : {}".format(self.freq(self.CLK_PER)))
+
+    async def time_display(self, step=(1, "us")):
+        dtime = 0
+        while True:
+            self.log.info("t {} {}".format(dtime*step[0], step[1]))
+            await Timer(*step)
+            dtime += 1
 
     async def reset(self):
         self.rst <= 1
@@ -60,12 +69,19 @@ class TestGbWrite(object):
         await RisingEdge(self.clk)
 
 @cocotb.test()
-async def minimal_clocking(dut):
-    fname = "minimal_clocking"
+async def one_frame(dut):
+    fname = "one_frame"
     tgw = TestGbWrite(dut)
     tgw.display_config()
     await Timer(1)
     tgw.log.info("Running test {}".format(fname))
     await tgw.reset()
-    await Timer(17, units="ms")
+    await RisingEdge(dut.io_GBVsync)
+    tgw.log.info("GBVsync rise")
+    await FallingEdge(dut.io_GBVsync)
+    tgw.log.info("GBVsync fall")
+    await RisingEdge(dut.io_GBVsync)
+    tgw.log.info("GBVsync rise")
+    await FallingEdge(dut.io_GBVsync)
+    tgw.log.info("GBVsync fall")
     tgw.log.info("End of {} test".format(fname))

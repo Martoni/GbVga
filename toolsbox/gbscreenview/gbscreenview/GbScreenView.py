@@ -25,7 +25,7 @@ class GbScreenView(object):
                 return
 
     def _wait_hsync(self, freader):
-        # Find falling edge of hsync
+        # Find rising edge of hsync
         for curtime, hsync, d1, clk, d0, vsync in freader:
             if int(hsync) == 1:
                 return

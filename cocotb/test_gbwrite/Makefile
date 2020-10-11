@@ -2,10 +2,13 @@
 SIM=verilator
 #SIM=icarus
 
+# Added in head `timescale ...
+VL_TIME_UNIT="10ns"
+VL_TIME_PRECISION="100ps"
+
 ifeq ($(SIM),verilator)
 COMPILE_ARGS=-DCOCOTB_VERILATOR
-export COCOTB_HDL_TIMEPRECISION=1ns
-EXTRA_ARGS += --trace
+EXTRA_ARGS += --trace --trace-structs
 endif
 
 ifeq ($(SIM),icarus)
@@ -13,11 +16,16 @@ COMPILE_ARGS += -DCOCOTB_ICARUS
 endif
 
 export COCOTB_REDUCED_LOG_FMT=1
-VERILOG_SOURCES = $(PWD)/../../chisel/GbWrite.v
+
 TOPLEVEL=GbWrite
+VERILOG_SOURCES = $(PWD)/$(TOPLEVEL)_withtp.v
 MODULE=test_$(TOPLEVEL)
 include $(shell cocotb-config --makefile)/Makefile.sim
 
+$(PWD)/$(TOPLEVEL)_withtp.v: $(PWD)/../../chisel/$(TOPLEVEL).v
+	echo "\`timescale $(VL_TIME_UNIT)/$(VL_TIME_PRECISION)" > $@
+	echo "" > $@
+	cat $< >> $@
 
-$(PWD)/../../chisel/GbWrite.v:  $(PWD)/../../chisel/src/main/scala/gbvga/gbwrite.scala
-	cd $(PWD)/../../chisel/; sbt "runMain gbvga.GbWriteDriver"
+$(PWD)/../../chisel/$(TOPLEVEL).v:  $(PWD)/../../chisel/src/main/scala/gbvga/gbwrite.scala
+	cd $(PWD)/../../chisel/; sbt "runMain gbvga.$(TOPLEVEL)Driver"
