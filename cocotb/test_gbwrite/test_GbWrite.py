@@ -20,8 +20,8 @@ from gbscreenview import GbScreenView
 
 
 class TestGbWrite(object):
-    #CLK_PER = (40, "ns") #25Mhz
-    CLK_PER = (125, "ns") #8Mhz
+    CLK_PER = (40, "ns") #25Mhz
+    #CLK_PER = (125, "ns") #8Mhz
     CSV_FILENAME = "../../assets/screenshoot/beautyandbeast.csv"
 
     def __init__(self, dut):

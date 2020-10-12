@@ -20,15 +20,15 @@ class GbWrite (val datawidth: Int = 8) extends Module { //with Formal {
     val Mdata  = Output(UInt(datawidth.W))
     val Mwrite = Output(Bool())
     /* debug */
-    val countcol = Output(UInt(12.W))
+    val countcol = Output(UInt(32.W))
   })
 
   val lineCount = RegInit(0.U(log2Ceil(GBHEIGHT).W))
-  val pixelCount = RegInit(3.U(3.W))
+  val pixelCount = RegInit((GBHEIGHT*GBWITH).U)
   val byteCount = RegInit(0.U(log2Ceil(GBWITH/4).W))
 
   val countreg = RegInit(0.U(12.W))
-  io.countcol := countreg
+  io.countcol := pixelCount
 
   val pixelZero = VecInit(Seq.fill(4)(0.U(2.W)))
   val pixel = RegInit(pixelZero)
@@ -38,6 +38,7 @@ class GbWrite (val datawidth: Int = 8) extends Module { //with Formal {
     lineCount := 0.U
     byteCount := 0.U
     countreg := 0.U
+    pixelCount := 0.U
   }
 
   /* change lines on GBHsync */
@@ -50,17 +51,16 @@ class GbWrite (val datawidth: Int = 8) extends Module { //with Formal {
   /* read pixel on GBClk fall */
   io.Mwrite := false.B
   when(fallingedge(io.GBClk)) {
-    pixel(pixelCount) := io.GBData
-    pixelCount := pixelCount - 1.U
-    when(pixelCount === 0.U) {
-      byteCount := byteCount + 1.U
-      countreg := countreg + 1.U
-      pixelCount := 3.U
+    pixel(pixelCount & 3.U) := io.GBData
+    pixelCount := pixelCount + 1.U
+    countreg := countreg + 1.U
+    when((pixelCount & 3.U) === 0.U) {
       io.Mwrite := true.B
     }
   }
 
-  io.Maddr := lineCount*GBWITH.U + pixelCount
+//  io.Maddr := (lineCount - 1.U)*GBWITH.U + pixelCount
+  io.Maddr := pixelCount >> 2
   io.Mdata := pixel.asUInt
 }
 
