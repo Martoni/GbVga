@@ -24,7 +24,7 @@ include $(shell cocotb-config --makefile)/Makefile.sim
 
 $(PWD)/$(TOPLEVEL)_withtp.v: $(PWD)/../../chisel/$(TOPLEVEL).v
 	echo "\`timescale $(VL_TIME_UNIT)/$(VL_TIME_PRECISION)" > $@
-	echo "" > $@
+	echo "" >> $@
 	cat $< >> $@
 
 $(PWD)/../../chisel/$(TOPLEVEL).v:  $(PWD)/../../chisel/src/main/scala/gbvga/gbwrite.scala
