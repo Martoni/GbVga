@@ -18,7 +18,7 @@ from cocotb.triggers import RisingEdge
 from cocotb.triggers import FallingEdge
 from cocotb.triggers import ClockCycles
 from gbscreenview import GbScreenView
-
+from image_test import mem_image
 
 class TestGbWrite(object):
     #CLK_PER = (40, "ns") #25Mhz
@@ -36,6 +36,7 @@ class TestGbWrite(object):
         self._gsv = GbScreenView()
         self._td = cocotb.fork(
                 self.time_display(step=(1, "ms")))
+        self._mem = {}
 
     @classmethod
     def freq(cls, clkper):
@@ -56,10 +57,24 @@ class TestGbWrite(object):
             await Timer(*step)
             dtime += 1
 
+
+    async def memory_writer(self):
+        while True:
+            await RisingEdge(self._dut.clock)
+            if self._dut.io_Mwrite.value.integer > 0:
+                addr  = self._dut.io_Maddr.value.integer
+                data = self._dut.io_Mdata.value.integer
+                self._mem[addr] = data
+
+    def display_memory(self):
+        self._gsv.mem_2_image(self._mem)
+        self._gsv.show()
+
     async def reset(self):
         self.rst <= 1
         await Timer(100, units="ns")
         self.rst <= 0
+        self._mem_writer = cocotb.fork(self.memory_writer())
         self._gbsigs = cocotb.fork(self._gsv.gen_waves(
                         self._dut.io_GBHsync,
                         self._dut.io_GBVsync,
@@ -78,13 +93,17 @@ async def one_frame(dut):
     await Timer(1)
     tgw.log.info("Running test {}".format(fname))
     await tgw.reset()
+
     # Beginning of first full frame
     await RisingEdge(dut.io_GBVsync)
     tgw.log.info("GBVsync rise")
     await FallingEdge(dut.io_GBVsync)
     tgw.log.info("GBVsync fall")
+
     # Beginning of second frame
     await RisingEdge(dut.io_GBVsync)
+    tgw.display_memory()
+
     pixelcount = dut.io_countcol.value.integer
     rightpixelcount = 0x5A00
     if pixelcount != rightpixelcount:
