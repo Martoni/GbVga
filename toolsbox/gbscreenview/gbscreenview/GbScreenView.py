@@ -11,6 +11,7 @@ class GbScreenView(object):
     # Color from wikipedia  Game_Boy page
     # Green
     COLOR = ["#0F380F", "#8BAC0F", "#306230", "#9BBC0F"]
+    #       width, height
     GBSIZE = (160, 144)
     # Black
     #COLOR = ["#000000", "#555555", "#AAAAAA", "#FFFFFF"]
@@ -42,8 +43,7 @@ class GbScreenView(object):
         """ Read first image """
         with open(filename) as csvfile:
             freader = csv.reader(csvfile, delimiter=',')
-            print("titles")
-            print(next(freader))
+            next(freader)
             vsync_old = 0
             hsync_old = 0
             self._wait_vsync(freader)
@@ -54,12 +54,19 @@ class GbScreenView(object):
                     line.append(self._wait_clk_fall(freader))
                 self.image.append(line)
 
+    def mem_2_image(self, mem):
+        for j in range(self.GBSIZE[1]):
+            line = []
+            for i in range(self.GBSIZE[0]):
+                pixnum = j*self.GBSIZE[0] + i
+                bytevalue = mem[pixnum//4]
+                line.append(bin((bytevalue>>(2*(pixnum%4))&0x3)).split('b')[-1])
+            self.image.append(line)
 
     def read_csv(self, filename):
         """ Read first image """
         print("Warning: read_csv() is deprecated, use csv_2_image() instead")
         self.csv_2_image(filename)
-
 
     def show(self):
         if self.image == []:
@@ -98,3 +105,4 @@ class GbScreenView(object):
                 sdata <= int(d1)*2 + int(d0)
                 sclk <= int(clk)
                 oldtime = int(float(curtime)*1.e9)
+
