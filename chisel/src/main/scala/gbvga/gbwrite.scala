@@ -8,7 +8,7 @@ import chisel3.stage.{ChiselGeneratorAnnotation, ChiselStage}
 
 import GbConst._
 
-class GbWrite (val datawidth: Int = 8) extends Module { //with Formal {
+class GbWrite (val datawidth: Int = 8, val input_sync: Boolean = true) extends Module { //with Formal {
   val io = IO(new Bundle {
     /* GameBoy input */
     val GBHsync    = Input(Bool())
@@ -23,6 +23,11 @@ class GbWrite (val datawidth: Int = 8) extends Module { //with Formal {
     val countcol = Output(UInt(32.W))
   })
 
+  val shsync = if(input_sync) ShiftRegister(io.GBHsync,2) else io.GBHsync
+  val svsync = if(input_sync) ShiftRegister(io.GBVsync,2) else io.GBVsync
+  val sclk   = if(input_sync) ShiftRegister(io.GBClk  ,2) else io.GBClk
+  val sdata  = if(input_sync) ShiftRegister(io.GBData ,2) else io.GBData
+
   val lineCount = RegInit(0.U(log2Ceil(GBHEIGHT).W))
   val pixelCount = RegInit((GBHEIGHT*GBWITH).U)
   val byteCount = RegInit(0.U(log2Ceil(GBWITH/4).W))
@@ -33,8 +38,8 @@ class GbWrite (val datawidth: Int = 8) extends Module { //with Formal {
   val pixelZero = VecInit(Seq.fill(4)(0.U(2.W)))
   val pixel = RegInit(pixelZero)
 
-  /* Reset lines an column on GBVsync */
-  when(risingedge(io.GBVsync)) {
+  /* Reset lines an column on vsync */
+  when(risingedge(svsync)) {
     lineCount := 0.U
     byteCount := 0.U
     countreg := 0.U
@@ -42,16 +47,16 @@ class GbWrite (val datawidth: Int = 8) extends Module { //with Formal {
   }
 
   /* change lines on GBHsync */
-  when(fallingedge(io.GBHsync)) {
+  when(fallingedge(shsync)) {
     lineCount := lineCount + 1.U
     byteCount := 0.U
     countreg := 0.U
   }
 
-  /* read pixel on GBClk fall */
+  /* read pixel on sclk fall */
   io.Mwrite := false.B
-  when(fallingedge(io.GBClk)) {
-    pixel(pixelCount & 3.U) := io.GBData
+  when(fallingedge(sclk)) {
+    pixel(pixelCount & 3.U) := sdata
     pixelCount := pixelCount + 1.U
     countreg := countreg + 1.U
     when((pixelCount & 3.U) === 0.U) {
