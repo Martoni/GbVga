@@ -13,6 +13,7 @@ import logging
 from cocotb.clock import Clock
 from cocotb.triggers import Timer
 from cocotb.result import raise_error
+from cocotb.result import TestFailure
 from cocotb.triggers import RisingEdge
 from cocotb.triggers import FallingEdge
 from cocotb.triggers import ClockCycles
@@ -20,8 +21,9 @@ from gbscreenview import GbScreenView
 
 
 class TestGbWrite(object):
-    CLK_PER = (40, "ns") #25Mhz
-    #CLK_PER = (125, "ns") #8Mhz
+    #CLK_PER = (40, "ns") #25Mhz
+    CLK_PER = (80, "ns") #12.5Mhz
+    #CLK_PER = (100, "ns") #10Mhz
     CSV_FILENAME = "../../assets/screenshoot/beautyandbeast.csv"
 
     def __init__(self, dut):
@@ -76,11 +78,20 @@ async def one_frame(dut):
     await Timer(1)
     tgw.log.info("Running test {}".format(fname))
     await tgw.reset()
+    # Beginning of first full frame
     await RisingEdge(dut.io_GBVsync)
     tgw.log.info("GBVsync rise")
     await FallingEdge(dut.io_GBVsync)
     tgw.log.info("GBVsync fall")
+    # Beginning of second frame
     await RisingEdge(dut.io_GBVsync)
+    pixelcount = dut.io_countcol.value.integer
+    rightpixelcount = 0x5A00
+    if pixelcount != rightpixelcount:
+        msg = ("Wrong value of pixel count {}, should be {}"
+                .format(pixelcount, rightpixelcount))
+        tgw.log.error(msg)
+        raise TestFailure(msg)
     tgw.log.info("GBVsync rise")
     await FallingEdge(dut.io_GBVsync)
     tgw.log.info("GBVsync fall")

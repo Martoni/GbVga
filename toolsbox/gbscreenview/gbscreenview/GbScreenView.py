@@ -91,7 +91,8 @@ class GbScreenView(object):
             oldtime = int(float(curtime)*1.e9)
             for curtime, hsync, d1, clk, d0, vsync in freader:
                 newtime = int(float(curtime)*1.e9)
-                await Timer(newtime - oldtime, units="ns")
+                waitime = newtime - oldtime
+                await Timer(waitime, units="ns")
                 shsync <= int(hsync)
                 svsync <= int(vsync)
                 sdata <= int(d1)*2 + int(d0)
