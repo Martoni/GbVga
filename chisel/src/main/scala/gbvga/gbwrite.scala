@@ -2,13 +2,14 @@ package gbvga
 
 import chisel3._
 import chisel3.util._
-//import chisel3.formal.Formal
+import chisel3.formal._
 import chisel3.stage.{ChiselGeneratorAnnotation, ChiselStage}
-//import chisel3.experimental.{verification => formal}
 
 import GbConst._
 
-class GbWrite (val datawidth: Int = 8, val input_sync: Boolean = true) extends Module { //with Formal {
+class GbWrite (val datawidth: Int = 8,
+               val input_sync: Boolean = true,
+               val aformal: Boolean = false) extends Module with Formal {
   val io = IO(new Bundle {
     /* GameBoy input */
     val GBHsync    = Input(Bool())
@@ -64,6 +65,15 @@ class GbWrite (val datawidth: Int = 8, val input_sync: Boolean = true) extends M
     }
   }
 
+  if(aformal){
+      past(io.Mwrite, 1) (pMwrite => {
+        when(io.Mwrite === true.B) {
+          assert(pMwrite === false.B)
+        }
+      })
+      cover(countreg === 10.U)
+  }
+
 //  io.Maddr := (lineCount - 1.U)*GBWITH.U + pixelCount
   io.Maddr := pixelCount >> 2
   io.Mdata := pixel.asUInt
@@ -72,4 +82,9 @@ class GbWrite (val datawidth: Int = 8, val input_sync: Boolean = true) extends M
 object GbWriteDriver extends App {
   (new ChiselStage).execute(args,
       Seq(ChiselGeneratorAnnotation(() => new GbWrite(8))))
+}
+
+object GbWriteFormal extends App {
+  (new ChiselStage).execute(Array("-X", "sverilog"),
+      Seq(ChiselGeneratorAnnotation(() => new GbWrite(8, aformal=true))))
 }
