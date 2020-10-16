@@ -3,7 +3,7 @@ package gbvga
 import chisel3._
 import chisel3.util._
 
-object GbConst{
+object GbConst {
   val GBWITH   = 160
   val GBHEIGHT = 144
 
