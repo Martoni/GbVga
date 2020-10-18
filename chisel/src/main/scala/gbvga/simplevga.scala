@@ -44,13 +44,38 @@ class SimpleVGA extends RawModule {
     vsync := hvsync.io.vsync
 
     /* print color */
+    /*COLOR = ["#0F380F", "#8BAC0F", "#306230", "#9BBC0F"]*/
     red_reg   := 0.U
     green_reg := 0.U
     blue_reg  := 0.U
     when(hvsync.io.display_on) {
-      red_reg   := "h3F".U
-      green_reg := "h3F".U
-      blue_reg  := 0.U
+      /*"#0F380F"*/
+      when(hvsync.io.hpos(3, 2) === "b11".U) {
+        red_reg   := "h03".U
+        green_reg := "h0E".U
+        blue_reg  := "h03".U
+      }
+
+      /* "#8BAC0F"*/
+      when(hvsync.io.hpos(3, 2) === "b10".U) {
+        red_reg   := "h22".U
+        green_reg := "h2b".U
+        blue_reg  := "h03".U
+      }
+
+      /* "#306230"*/
+      when(hvsync.io.hpos(3, 2) === "b01".U) {
+        red_reg   := "h0C".U
+        green_reg := "h18".U
+        blue_reg  := "h0C".U
+      }
+
+      /* "#9BBC0F"*/
+      when(hvsync.io.hpos(3, 2) === "b00".U) {
+        red_reg   := "h26".U
+        green_reg := "h2F".U
+        blue_reg  := "h03".U
+      }
     }
   }
 
