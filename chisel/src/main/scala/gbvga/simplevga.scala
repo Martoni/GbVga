@@ -49,7 +49,7 @@ class SimpleVGA extends RawModule {
     blue_reg  := 0.U
     when(hvsync.io.display_on) {
       red_reg   := "h3F".U
-      green_reg := 0.U
+      green_reg := "h3F".U
       blue_reg  := 0.U
     }
   }
