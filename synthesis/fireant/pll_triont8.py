@@ -18,4 +18,4 @@ for vOd in Od:
                     if Fvco >= 500 and Fvco <= 1500:
                         fclkout = (Fvco/vO)/vOd
                         if (fclkout <= Ftarget+Tolerance) and (fclkout >= Ftarget-Tolerance):
-                            print("Ftarget {} found : N{} M{} O{} Od{}".format(fclkout, vN,vM,vO,vOd))
+                            print("Ftarget {} found : N{} M{} O{} Od{} [Fpfd {}, Fvco {}]".format(fclkout, vN,vM,vO,vOd, Fpfd, Fvco))
