@@ -9,7 +9,7 @@ import GbConst._
 
 class GbWrite (val datawidth: Int = 8,
                val input_sync: Boolean = true,
-               val aformal: Boolean = false) extends Module with Formal {
+               val aformal: Boolean = false) extends Module {//with Formal {
   val io = IO(new Bundle {
     /* GameBoy input */
     val GBHsync    = Input(Bool())
@@ -65,14 +65,14 @@ class GbWrite (val datawidth: Int = 8,
     }
   }
 
-  if(aformal){
-      past(io.Mwrite, 1) (pMwrite => {
-        when(io.Mwrite === true.B) {
-          assert(pMwrite === false.B)
-        }
-      })
-      cover(countreg === 10.U)
-  }
+//  if(aformal){
+//      past(io.Mwrite, 1) (pMwrite => {
+//        when(io.Mwrite === true.B) {
+//          assert(pMwrite === false.B)
+//        }
+//      })
+//      cover(countreg === 10.U)
+//  }
 
 //  io.Maddr := (lineCount - 1.U)*GBWITH.U + pixelCount
   io.Maddr := pixelCount >> 2
