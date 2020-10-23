@@ -9,7 +9,7 @@ import GbConst._
 
 class GbWrite (val datawidth: Int = 8,
                val input_sync: Boolean = true,
-               val aformal: Boolean = false) extends Module {//with Formal {
+               val aformal: Boolean = false) extends Module with Formal {
   val io = IO(new Bundle {
     /* GameBoy input */
     val GBHsync    = Input(Bool())
