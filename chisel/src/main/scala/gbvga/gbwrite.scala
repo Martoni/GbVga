@@ -65,14 +65,14 @@ class GbWrite (val datawidth: Int = 8,
     }
   }
 
-//  if(aformal){
-//      past(io.Mwrite, 1) (pMwrite => {
-//        when(io.Mwrite === true.B) {
-//          assert(pMwrite === false.B)
-//        }
-//      })
-//      cover(countreg === 10.U)
-//  }
+  if(aformal){
+      past(io.Mwrite, 1) (pMwrite => {
+        when(io.Mwrite === true.B) {
+          assert(pMwrite === false.B)
+        }
+      })
+      cover(countreg === 10.U)
+  }
 
 //  io.Maddr := (lineCount - 1.U)*GBWITH.U + pixelCount
   io.Maddr := pixelCount >> 2
@@ -80,11 +80,13 @@ class GbWrite (val datawidth: Int = 8,
 }
 
 object GbWriteDriver extends App {
+  println("")
+  println("> generate verilog")
   (new ChiselStage).execute(args,
       Seq(ChiselGeneratorAnnotation(() => new GbWrite(8))))
-}
-
-object GbWriteFormal extends App {
+  println("")
+  println("> generate systemVerilog for formal")
   (new ChiselStage).execute(Array("-X", "sverilog"),
       Seq(ChiselGeneratorAnnotation(() => new GbWrite(8, aformal=true))))
+
 }
