@@ -2,6 +2,7 @@ package gbvga
 
 import chisel3._
 import chisel3.util._
+import chisel3.stage.{ChiselGeneratorAnnotation, ChiselStage}
 
 
 class TopGbVga extends RawModule {
@@ -37,7 +38,7 @@ class TopGbVga extends RawModule {
     val sdata  = ShiftRegister(gb_data ,2)
 
     /* top GbVga module instantiation */
-    gbVga = Module(new GbVga(2))
+    val gbVga = Module(new GbVga())
     gbVga.io.gb_hsync := shsync
     gbVga.io.gb_vsync := svsync
     gbVga.io.gb_clk   := sclk

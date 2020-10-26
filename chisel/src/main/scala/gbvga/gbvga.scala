@@ -1,11 +1,12 @@
 package gbvga
 
 import chisel3._
-import chisel3.util._
+import chisel3.util._ 
+import chisel3.stage.{ChiselGeneratorAnnotation, ChiselStage}
 
 
 class GbVga extends Module {
-  val io = IO({
+  val io = IO(new Bundle {
     /* Game boy input signals */
     val gb_hsync = Input(Bool())
     val gb_vsync = Input(Bool())
@@ -19,7 +20,11 @@ class GbVga extends Module {
     val vga_blue = Output(Bool())
   })
 
-
+  io.vga_hsync := DontCare
+  io.vga_vsync := DontCare
+  io.vga_red   := DontCare
+  io.vga_green := DontCare
+  io.vga_blue  := DontCare
 
 }
 

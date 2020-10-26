@@ -7,9 +7,9 @@ import chisel3.stage.{ChiselGeneratorAnnotation, ChiselStage}
 
 import GbConst._
 
-class GbWrite (val datawidth: Int = 8,
-               val input_sync: Boolean = true,
-               val aformal: Boolean = false) extends Module with Formal {
+class GbWrite (val datawidth: Int = 2,
+               val input_sync: Boolean = false,
+               val aformal: Boolean = false) extends Module { // with Formal {
   val io = IO(new Bundle {
     /* GameBoy input */
     val GBHsync    = Input(Bool())
@@ -17,7 +17,7 @@ class GbWrite (val datawidth: Int = 8,
     val GBClk      = Input(Bool())
     val GBData     = Input(UInt(2.W))
     /* Memory write */
-    val Maddr  = Output(UInt((log2Ceil(GBWITH*GBHEIGHT*2/datawidth)).W))
+    val Maddr  = Output(UInt((log2Ceil(GBWITH*GBHEIGHT)).W))
     val Mdata  = Output(UInt(datawidth.W))
     val Mwrite = Output(Bool())
     /* debug */
@@ -31,18 +31,15 @@ class GbWrite (val datawidth: Int = 8,
 
   val lineCount = RegInit(0.U(log2Ceil(GBHEIGHT).W))
   val pixelCount = RegInit((GBHEIGHT*GBWITH).U)
-  val byteCount = RegInit(0.U(log2Ceil(GBWITH/4).W))
 
   val countreg = RegInit(0.U(12.W))
   io.countcol := pixelCount
 
-  val pixelZero = VecInit(Seq.fill(4)(0.U(2.W)))
-  val pixel = RegInit(pixelZero)
+  val pixel = RegInit(0.U(datawidth.W))
 
   /* Reset lines an column on vsync */
   when(risingedge(svsync)) {
     lineCount := 0.U
-    byteCount := 0.U
     countreg := 0.U
     pixelCount := 0.U
   }
@@ -50,33 +47,29 @@ class GbWrite (val datawidth: Int = 8,
   /* change lines on GBHsync */
   when(fallingedge(shsync)) {
     lineCount := lineCount + 1.U
-    byteCount := 0.U
     countreg := 0.U
   }
 
   /* read pixel on sclk fall */
   io.Mwrite := false.B
   when(fallingedge(sclk)) {
-    pixel(pixelCount & 3.U) := sdata
+    pixel := sdata
     pixelCount := pixelCount + 1.U
-    countreg := countreg + 1.U
-    when((pixelCount & 3.U) === 0.U) {
-      io.Mwrite := true.B
-    }
+    io.Mwrite := true.B
   }
 
-  if(aformal){
-      past(io.Mwrite, 1) (pMwrite => {
-        when(io.Mwrite === true.B) {
-          assert(pMwrite === false.B)
-        }
-      })
-      cover(countreg === 10.U)
-  }
+//  if(aformal){
+//      /* Mwrite should be 1 cycle wide */
+//      past(io.Mwrite, 1) (pMwrite => {
+//        when(io.Mwrite === true.B) {
+//          assert(pMwrite === false.B)
+//        }
+//      })
+//      cover(countreg === 10.U)
+//  }
 
-//  io.Maddr := (lineCount - 1.U)*GBWITH.U + pixelCount
-  io.Maddr := pixelCount >> 2
-  io.Mdata := pixel.asUInt
+  io.Maddr := pixelCount
+  io.Mdata := pixel
 }
 
 object GbWriteDriver extends App {
@@ -88,5 +81,4 @@ object GbWriteDriver extends App {
   println("> generate systemVerilog for formal")
   (new ChiselStage).execute(Array("-X", "sverilog"),
       Seq(ChiselGeneratorAnnotation(() => new GbWrite(8, aformal=true))))
-
 }

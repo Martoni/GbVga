@@ -21,8 +21,8 @@ from gbscreenview import GbScreenView
 from image_test import mem_image
 
 class TestGbWrite(object):
-    #CLK_PER = (40, "ns") #25Mhz
-    CLK_PER = (80, "ns") #12.5Mhz
+    CLK_PER = (40, "ns") #25Mhz
+    #CLK_PER = (80, "ns") #12.5Mhz
     #CLK_PER = (100, "ns") #10Mhz
     CSV_FILENAME = "../../assets/screenshoot/beautyandbeast.csv"
 
@@ -56,7 +56,6 @@ class TestGbWrite(object):
             self.log.info("t {} {}".format(dtime*step[0], step[1]))
             await Timer(*step)
             dtime += 1
-
 
     async def memory_writer(self):
         while True:
