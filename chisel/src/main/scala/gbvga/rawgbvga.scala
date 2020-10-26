@@ -1,6 +1,6 @@
 package gbvga
 
-/* direct connection GB -> VGA for tests only
+/* direct connection GB - VGA for tests only
  * Fabien Marteau <mail@fabienm.eu>
  */
 
@@ -40,7 +40,6 @@ class RawGbVga extends RawModule {
 
     /* synchronize gb signals */
     val gbclk_s = ShiftRegister(gb_clk, 2)
-     
 
     /* colors regs */
     val red_reg = RegInit(0.U(6.W))
@@ -49,7 +48,6 @@ class RawGbVga extends RawModule {
     red := red_reg
     green := green_reg
     blue := blue_reg
-
 
     /* latching gbpixel */
     val gbpixlatch = RegInit(0.U(2.W))
@@ -89,11 +87,9 @@ class RawGbVga extends RawModule {
           green_reg := "h0E".U
           blue_reg  := "h03".U
         }
-
       }
     }
   }
-
 }
 
 object RawGbVgaDriver extends App {
