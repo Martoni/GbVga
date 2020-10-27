@@ -65,6 +65,15 @@ class TestGbWrite(object):
                 data = self._dut.io_Mdata.value.integer
                 self._mem[addr] = data
 
+    async def gb_mw_monitor(self):
+        while True:
+            await FallingEdge(self._dut.io_GBClk)
+            await Timer(1)
+            if self._dut.io_Mwrite.value.integer == 0:
+                msg = "No mwrite at GBClk falling edge"
+                self.log.error(msg)
+                raise TestFailure(msg)
+
     def display_memory(self):
         self._gsv.mem_2_image(self._mem)
         self._gsv.show()
