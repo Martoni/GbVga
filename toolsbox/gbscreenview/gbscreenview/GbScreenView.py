@@ -59,8 +59,11 @@ class GbScreenView(object):
             line = []
             for i in range(self.GBSIZE[0]):
                 pixnum = j*self.GBSIZE[0] + i
-                bytevalue = mem[pixnum//4]
-                line.append(bin((bytevalue>>(2*(pixnum%4))&0x3)).split('b')[-1])
+                try:
+                    bytevalue = mem[pixnum]
+                except KeyError as err:
+                    bytevalue = 0
+                line.append(bin(bytevalue).split('b')[-1])
             self.image.append(line)
 
     def read_csv(self, filename):
