@@ -8,8 +8,8 @@ import chisel3.stage.{ChiselGeneratorAnnotation, ChiselStage}
 import GbConst._
 
 class GbWrite (val datawidth: Int = 2,
-               val input_sync: Boolean = false,
-               val aformal: Boolean = false) extends Module { // with Formal {
+               val debug_simu: Boolean = true,
+               val aformal: Boolean = false) extends Module {//with Formal {
   val io = IO(new Bundle {
     /* GameBoy input */
     val GBHsync    = Input(Bool())
@@ -24,16 +24,19 @@ class GbWrite (val datawidth: Int = 2,
     val countcol = Output(UInt(32.W))
   })
 
-  val shsync = if(input_sync) ShiftRegister(io.GBHsync,2) else io.GBHsync
-  val svsync = if(input_sync) ShiftRegister(io.GBVsync,2) else io.GBVsync
-  val sclk   = if(input_sync) ShiftRegister(io.GBClk  ,2) else io.GBClk
-  val sdata  = if(input_sync) ShiftRegister(io.GBData ,2) else io.GBData
+  val shsync = if(debug_simu) ShiftRegister(io.GBHsync,2) else io.GBHsync
+  val svsync = if(debug_simu) ShiftRegister(io.GBVsync,2) else io.GBVsync
+  val sclk   = if(debug_simu) ShiftRegister(io.GBClk  ,2) else io.GBClk
+  val sdata  = if(debug_simu) ShiftRegister(io.GBData ,2) else io.GBData
+
 
   val lineCount = RegInit(0.U(log2Ceil(GBHEIGHT).W))
   val pixelCount = RegInit((GBHEIGHT*GBWITH).U)
 
   val countreg = RegInit(0.U(12.W))
-  io.countcol := pixelCount
+  if(debug_simu) {
+    io.countcol := pixelCount
+  }
 
   val pixel = RegInit(0.U(datawidth.W))
 
@@ -76,7 +79,7 @@ object GbWriteDriver extends App {
   println("")
   println("> generate verilog")
   (new ChiselStage).execute(args,
-      Seq(ChiselGeneratorAnnotation(() => new GbWrite(8))))
+      Seq(ChiselGeneratorAnnotation(() => new GbWrite(8, debug_simu=true))))
   println("")
   println("> generate systemVerilog for formal")
   (new ChiselStage).execute(Array("-X", "sverilog"),
