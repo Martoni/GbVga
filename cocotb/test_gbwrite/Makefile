@@ -31,6 +31,6 @@ $(PWD)/../../chisel/$(TOPLEVEL).v:  $(PWD)/../../chisel/src/main/scala/gbvga/gbw
 	cd $(PWD)/../../chisel/; sbt "runMain gbvga.$(TOPLEVEL)Driver"
 
 mrproper:
-	rm -f GbWrite_withtp.v
+	rm -f $(TOPLEVEL)_withtp.v
 	rm -rf __pycache__
-	rm -f $(PWD)/../../chisel/GbWrite.v
+	rm -f $(PWD)/../../chisel/$(TOPLEVEL).v
