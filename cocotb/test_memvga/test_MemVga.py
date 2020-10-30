@@ -64,4 +64,4 @@ async def one_frame(dut):
     await Timer(1)
     tmv.log.info("Running test {}".format(fname))
     await tmv.reset()
-    await FallingEdge(dut.io_vsync)
+    await FallingEdge(dut.io_vga_vsync)

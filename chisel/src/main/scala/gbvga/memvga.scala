@@ -1,7 +1,7 @@
 package gbvga
 
 import chisel3._
-import chisel3.util._ 
+import chisel3.util._
 import chisel3.stage.{ChiselGeneratorAnnotation, ChiselStage}
 
 import GbConst._
@@ -16,22 +16,24 @@ class MemVga extends Module {
     /* VGA output signals */
     val vga_hsync = Output(Bool())
     val vga_vsync = Output(Bool())
-    val vga_red = Output(Bool())
-    val vga_green = Output(Bool())
-    val vga_blue = Output(Bool())
+    val vga_color = Output(new VgaColors())
   })
+
+  val hvsync = Module(new HVSync()) // Synchronize VGA module
+  io.vga_hsync := hvsync.io.hsync
+  io.vga_vsync := hvsync.io.vsync
+
+  io.vga_color := VGA_BLACK
+  when(hvsync.io.display_on){
+    io.vga_color   := GbColors(0)
+  }
 
 //XXX
 io.mem_addr  := DontCare
 io.mem_read  := DontCare
-io.vga_hsync := DontCare
-io.vga_vsync := DontCare
-io.vga_red   := DontCare
-io.vga_green := DontCare
-io.vga_blue  := DontCare
 //XXX
-}
 
+}
 
 object MemVgaDriver extends App {
   (new ChiselStage).execute(args,
