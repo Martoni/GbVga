@@ -41,8 +41,12 @@ class MemVga extends Module {
       }
     }
     is(sPixInc) {
-      when(gbcols >= (GBWIDTH - 1).U){
+      when(gbcols >= (GBWIDTH - 1).U &&
+           gblines <= (GBHEIGHT -1).U){
         state := sLineInc
+      }
+      when(gblines > (GBHEIGHT - 1).U){
+        state := sWait
       }
     }
     is(sLineInc) {
@@ -53,9 +57,9 @@ class MemVga extends Module {
         when(gblines < GBHEIGHT.U) {
           state := sPixInc
         }
-        when(gblines >= GBHEIGHT.U) {
-          state := sInit
-        }
+      }
+      when(!hvsync.io.vsync){
+        state := sInit
       }
     }
   }
@@ -79,7 +83,7 @@ class MemVga extends Module {
 
   /* Vga colors */
   io.vga_color := VGA_BLACK
-  when(hvsync.io.display_on){
+  when(hvsync.io.display_on && (state===sPixInc)){
     io.vga_color   := GbColors(io.mem_data)
   }
 

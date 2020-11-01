@@ -91,5 +91,4 @@ async def one_frame(dut):
     with open("vga_image.py", "w") as vi:
         vi.write("vga_image = ")
         vi.write("{}".format(tmv._gsv.vga_image))
-    print("{} lignes".format(len(tmv._gsv.vga_image)))
     tmv._gsv.vga_show()
