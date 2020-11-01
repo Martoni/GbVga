@@ -4,8 +4,28 @@ import getopt
 import serial
 import logging
 from cocotb.triggers import Timer
+from cocotb.triggers import FallingEdge
+from cocotb.triggers import RisingEdge
 
 from PIL import Image, ImageDraw
+
+class VGA(object):
+    H_DISPLAY = 640  # horizontal display width
+    H_FRONT = 8      # front porch
+    H_SYNC = 96      # sync width
+    H_BACK = 40      # back porch
+    V_SYNC = 4       # sync width
+    V_BACK = 25      # back porch
+    V_TOP = 4        # top border
+    V_DISPLAY = 480  # vertical display width
+    V_BOTTOM = 14    # bottom border
+    H_SYNC_START = H_DISPLAY + H_FRONT
+    H_SYNC_END = H_DISPLAY + H_FRONT + H_SYNC - 1
+    H_MAX = H_DISPLAY + H_BACK + H_FRONT + H_SYNC - 1
+    V_SYNC_START = V_DISPLAY + V_BOTTOM
+    V_SYNC_END = V_DISPLAY + V_BOTTOM + V_SYNC - 1
+    V_MAX = V_DISPLAY + V_TOP + V_BOTTOM + V_SYNC - 1
+
 
 class GbScreenView(object):
     # Color from wikipedia  Game_Boy page
@@ -18,6 +38,7 @@ class GbScreenView(object):
 
     def __init__(self):
         self.image = []
+        self.vga_image = None
 
     def _wait_vsync(self, freader):
         # Find rising edge of vsync
@@ -54,6 +75,36 @@ class GbScreenView(object):
                     line.append(self._wait_clk_fall(freader))
                 self.image.append(line)
 
+    async def vga_2_image(self, clk25, hsync, vsync, red, green, blue, reset):
+        """ Thread that read image from vga signals """
+        colcount = 0
+        linecount = 0
+        await FallingEdge(reset)
+        display = False
+        self.vga_image = [[]]
+        old_hsync = 0
+        while True:
+            await RisingEdge(clk25)
+            print("DEBUG: line {} column {}".format(linecount, colcount))
+            display = ((colcount >= VGA.H_BACK) and
+                            (colcount <= (VGA.H_BACK + VGA.H_DISPLAY)))
+            if display:
+                self.vga_image[linecount].append((red.value.integer,
+                                                  green.value.integer,
+                                                  blue.value.integer))
+            if hsync.value.integer == 0:
+                colcount = 0
+            else:
+                colcount += 1
+            if old_hsync == 0 and (hsync.value.integer == 1):
+                self.vga_image.append([])
+                linecount += 1
+
+            if vsync.value.integer == 0:
+                linecount = 0
+
+            old_hsync = hsync.value.integer
+
     def mem_2_image(self, mem):
         for j in range(self.GBSIZE[1]):
             line = []
@@ -74,7 +125,7 @@ class GbScreenView(object):
     def show(self):
         if self.image == []:
             raise Exception("Read data first")
-        square = 3 
+        square = 3
         im = Image.new("RGB",
                        (self.GBSIZE[0]*square, self.GBSIZE[1]*square),
                        "#000000")
