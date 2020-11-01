@@ -67,10 +67,10 @@ class TestGbWrite(object):
 
     async def gb_mw_monitor(self):
         while True:
-            await FallingEdge(self._dut.io_GBClk)
+            await FallingEdge(self._dut.io_gb_clk)
             await Timer(1)
             if self._dut.io_Mwrite.value.integer == 0:
-                msg = "No mwrite at GBClk falling edge"
+                msg = "No mwrite at gb_clk falling edge"
                 self.log.error(msg)
                 raise TestFailure(msg)
 
@@ -84,10 +84,10 @@ class TestGbWrite(object):
         self.rst <= 0
         self._mem_writer = cocotb.fork(self.memory_writer())
         self._gbsigs = cocotb.fork(self._gsv.gen_waves(
-                        self._dut.io_GBHsync,
-                        self._dut.io_GBVsync,
-                        self._dut.io_GBClk,
-                        self._dut.io_GBData,
+                        self._dut.io_gb_hsync,
+                        self._dut.io_gb_vsync,
+                        self._dut.io_gb_clk,
+                        self._dut.io_gb_data,
                         self.log,
                         self.CSV_FILENAME))
 
@@ -103,13 +103,13 @@ async def one_frame(dut):
     await tgw.reset()
 
     # Beginning of first full frame
-    await RisingEdge(dut.io_GBVsync)
-    tgw.log.info("GBVsync rise")
-    await FallingEdge(dut.io_GBVsync)
-    tgw.log.info("GBVsync fall")
+    await RisingEdge(dut.io_gb_vsync)
+    tgw.log.info("gb_vsync rise")
+    await FallingEdge(dut.io_gb_vsync)
+    tgw.log.info("gb_vsync fall")
 
     # Beginning of second frame
-    await RisingEdge(dut.io_GBVsync)
+    await RisingEdge(dut.io_gb_vsync)
     tgw.display_memory()
 
     pixelcount = dut.io_countcol.value.integer
@@ -119,7 +119,7 @@ async def one_frame(dut):
                 .format(pixelcount, rightpixelcount))
         tgw.log.error(msg)
         raise TestFailure(msg)
-    tgw.log.info("GBVsync rise")
-    await FallingEdge(dut.io_GBVsync)
-    tgw.log.info("GBVsync fall")
+    tgw.log.info("gb_vsync rise")
+    await FallingEdge(dut.io_gb_vsync)
+    tgw.log.info("gb_vsync fall")
     tgw.log.info("End of {} test".format(fname))

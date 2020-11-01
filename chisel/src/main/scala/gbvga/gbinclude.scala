@@ -10,6 +10,13 @@ class VgaColors extends Bundle {
   val blue  = UInt(6.W)
 }
 
+class Gb extends Bundle {
+  val hsync = Bool()
+  val vsync = Bool()
+  val clk   = Bool()
+  val data  = UInt(2.W) 
+}
+
 object GbConst {
   val GBWIDTH   = 160
   val GBHEIGHT = 144

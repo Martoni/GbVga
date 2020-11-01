@@ -8,23 +8,18 @@ import chisel3.stage.{ChiselGeneratorAnnotation, ChiselStage}
 class GbVga extends Module {
   val io = IO(new Bundle {
     /* Game boy input signals */
-    val gb_hsync = Input(Bool())
-    val gb_vsync = Input(Bool())
-    val gb_clk = Input(Bool())
-    val gb_data = Input(Bool())
+    val gb = Input(new Gb())
     /* VGA output signals */
     val vga_hsync = Output(Bool())
     val vga_vsync = Output(Bool())
-    val vga_red = Output(Bool())
-    val vga_green = Output(Bool())
-    val vga_blue = Output(Bool())
+    val vga_color = Output(new VgaColors())
   })
 
   io.vga_hsync := DontCare
   io.vga_vsync := DontCare
-  io.vga_red   := DontCare
-  io.vga_green := DontCare
-  io.vga_blue  := DontCare
+  io.vga_color.red   := DontCare
+  io.vga_color.green := DontCare
+  io.vga_color.blue  := DontCare
 
 }
 

@@ -12,10 +12,11 @@ class GbWrite (val datawidth: Int = 2,
                val aformal: Boolean = false) extends Module {//with Formal {
   val io = IO(new Bundle {
     /* GameBoy input */
-    val GBHsync    = Input(Bool())
-    val GBVsync    = Input(Bool())
-    val GBClk      = Input(Bool())
-    val GBData     = Input(UInt(2.W))
+//    val gb.hsync    = Input(Bool())
+//    val gb.vsync    = Input(Bool())
+//    val gb.clk      = Input(Bool())
+//    val gb.data     = Input(UInt(2.W))
+    val gb = Input(new Gb())
     /* Memory write */
     val Maddr  = Output(UInt((log2Ceil(GBWIDTH*GBHEIGHT)).W))
     val Mdata  = Output(UInt(datawidth.W))
@@ -24,10 +25,10 @@ class GbWrite (val datawidth: Int = 2,
     val countcol = Output(UInt(32.W))
   })
 
-  val shsync = if(debug_simu) ShiftRegister(io.GBHsync,2) else io.GBHsync
-  val svsync = if(debug_simu) ShiftRegister(io.GBVsync,2) else io.GBVsync
-  val sclk   = if(debug_simu) ShiftRegister(io.GBClk  ,2) else io.GBClk
-  val sdata  = if(debug_simu) ShiftRegister(io.GBData ,2) else io.GBData
+  val shsync = if(debug_simu) ShiftRegister(io.gb.hsync,2) else io.gb.hsync
+  val svsync = if(debug_simu) ShiftRegister(io.gb.vsync,2) else io.gb.vsync
+  val sclk   = if(debug_simu) ShiftRegister(io.gb.clk  ,2) else io.gb.clk
+  val sdata  = if(debug_simu) ShiftRegister(io.gb.data ,2) else io.gb.data
 
 
   val lineCount = RegInit(0.U(log2Ceil(GBHEIGHT).W))
@@ -47,7 +48,7 @@ class GbWrite (val datawidth: Int = 2,
     pixelCount := 0.U
   }
 
-  /* change lines on GBHsync */
+  /* change lines on gb.hsync */
   when(fallingedge(shsync)) {
     lineCount := lineCount + 1.U
     countreg := 0.U

@@ -15,39 +15,35 @@ class TopGbVga extends RawModule {
   val pll_rstn = IO(Output(Bool()))
 
   /* game boy signals */
-  val gb_hsync = IO(Input(Bool()))
-  val gb_vsync = IO(Input(Bool()))
-  val gb_clk = IO(Input(Bool()))
-  val gb_data = IO(Input(UInt(2.W)))
+  val gb = IO(Input(new Gb()))
 
   /* Vga */
   val hsync = IO(Output(Bool()))
   val vsync = IO(Output(Bool()))
-  val red = IO(Output(UInt(6.W)))
-  val green = IO(Output(UInt(6.W)))
-  val blue = IO(Output(UInt(6.W)))
+  val vga_color = IO(new VgaColors()) 
 
   withClockAndReset(clock, ~resetn) {
     /* Activate pll at start*/
     pll_rstn := true.B
    
     /* synchronize gameboy input signals with clock */
-    val shsync = ShiftRegister(gb_hsync,2)
-    val svsync = ShiftRegister(gb_vsync,2)
-    val sclk   = ShiftRegister(gb_clk  ,2)
-    val sdata  = ShiftRegister(gb_data ,2)
+    val shsync = ShiftRegister(gb.hsync,2)
+    val svsync = ShiftRegister(gb.vsync,2)
+    val sclk   = ShiftRegister(gb.clk  ,2)
+    val sdata  = ShiftRegister(gb.data ,2)
 
     /* top GbVga module instantiation */
     val gbVga = Module(new GbVga())
-    gbVga.io.gb_hsync := shsync
-    gbVga.io.gb_vsync := svsync
-    gbVga.io.gb_clk   := sclk
-    gbVga.io.gb_data  := sdata
+    gbVga.io.gb.hsync := shsync
+    gbVga.io.gb.vsync := svsync
+    gbVga.io.gb.clk   := sclk
+    gbVga.io.gb.data  := sdata
     hsync := gbVga.io.vga_hsync
     vsync := gbVga.io.vga_vsync
-    red   := gbVga.io.vga_red
-    green := gbVga.io.vga_green
-    blue  := gbVga.io.vga_blue
+
+    vga_color.red   := gbVga.io.vga_color.red
+    vga_color.green := gbVga.io.vga_color.green
+    vga_color.blue  := gbVga.io.vga_color.blue
 
   }
 }
