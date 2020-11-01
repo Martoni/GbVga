@@ -17,7 +17,7 @@ class GbWrite (val datawidth: Int = 2,
     val GBClk      = Input(Bool())
     val GBData     = Input(UInt(2.W))
     /* Memory write */
-    val Maddr  = Output(UInt((log2Ceil(GBWITH*GBHEIGHT)).W))
+    val Maddr  = Output(UInt((log2Ceil(GBWIDTH*GBHEIGHT)).W))
     val Mdata  = Output(UInt(datawidth.W))
     val Mwrite = Output(Bool())
     /* debug */
@@ -31,7 +31,7 @@ class GbWrite (val datawidth: Int = 2,
 
 
   val lineCount = RegInit(0.U(log2Ceil(GBHEIGHT).W))
-  val pixelCount = RegInit((GBHEIGHT*GBWITH).U)
+  val pixelCount = RegInit((GBHEIGHT*GBWIDTH).U)
 
   val countreg = RegInit(0.U(12.W))
   if(debug_simu) {

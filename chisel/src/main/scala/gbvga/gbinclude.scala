@@ -11,7 +11,7 @@ class VgaColors extends Bundle {
 }
 
 object GbConst {
-  val GBWITH   = 160
+  val GBWIDTH   = 160
   val GBHEIGHT = 144
 
   def risingedge(x: Bool) = x && !RegNext(x)
