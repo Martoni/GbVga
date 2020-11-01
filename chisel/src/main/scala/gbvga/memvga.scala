@@ -23,15 +23,66 @@ class MemVga extends Module {
   io.vga_hsync := hvsync.io.hsync
   io.vga_vsync := hvsync.io.vsync
 
-  io.vga_color := VGA_BLACK
-  when(hvsync.io.display_on){
-    io.vga_color   := GbColors(0)
+  val gblines = RegInit(0.U((log2Ceil(GBWITH)).W))
+  val gbcols = RegInit(0.U((log2Ceil(GBHEIGHT)).W))
+  val gbpix = RegInit(0.U((log2Ceil(GBWITH*GBHEIGHT)).W))
+
+  /* state machine */
+  val sInit :: sPixInc :: sLineInc :: sWait :: Nil = Enum(4)
+  val state = RegInit(sInit)
+
+  switch(state) {
+    is(sInit) {
+      when(hvsync.io.display_on){
+        state := sPixInc
+      }
+    }
+    is(sPixInc) {
+      when(gbcols >= (GBWITH - 1).U){
+        state := sLineInc
+      }
+    }
+    is(sLineInc) {
+          state := sWait
+    }
+    is(sWait) {
+      when(!hvsync.io.hsync){
+        when(gblines < GBHEIGHT.U) {
+          state := sPixInc
+        }
+        when(gblines >= GBHEIGHT.U) {
+          state := sInit
+        }
+      }
+    }
   }
 
-//XXX
-io.mem_addr  := DontCare
-io.mem_read  := DontCare
-//XXX
+  /* pixel count */
+  when(hvsync.io.display_on){
+    when(state===sPixInc) {
+      gbpix := gbpix + 1.U
+      gbcols := gbcols + 1.U
+    }
+    when(state===sLineInc) {
+      gblines := gblines + 1.U
+      gbcols := 0.U
+    }
+  }
+  when(state===sInit) {
+    gbpix := 0.U
+    gbcols := 0.U
+    gblines := 0.U
+  }
+
+  /* Vga colors */
+  io.vga_color := VGA_BLACK
+  when(hvsync.io.display_on){
+    io.vga_color   := GbColors(io.mem_data)
+  }
+
+  /* Memory interface */
+  io.mem_addr  := gbpix
+  io.mem_read  := true.B
 
 }
 
