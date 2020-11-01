@@ -139,6 +139,22 @@ class GbScreenView(object):
                              fill=color[int(self.image[j][i], 2)])
         im.show()
 
+    def vga_show(self):
+        if self.vga_image is None:
+            raise Exception("No vga image to display")
+        vgawidth = max(set([len(line) for line in self.vga_image]))
+        vgaheight = len(self.vga_image)
+        im = Image.new("RGB", (vgawidth, vgaheight), "#000000")
+        d = ImageDraw.Draw(im)
+        for i, line in enumerate(self.vga_image):
+            for j, pix in enumerate(line):
+                color = "#{:02X}{:02X}{:02X}".format(pix[0] << 2,
+                                                     pix[1] << 2,
+                                                     pix[2] << 2)
+                d.rectangle([(j, i), (j, i)], fill=color)
+        im.show()
+
+
     async def gen_waves(self, shsync, svsync, sclk, sdata, log, filename):
         with open(filename) as csvfile:
             freader = csv.reader(csvfile, delimiter=',')
