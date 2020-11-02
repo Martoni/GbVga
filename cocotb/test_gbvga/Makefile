@@ -27,9 +27,10 @@ $(PWD)/$(TOPLEVEL)_withtp.v: $(PWD)/../../chisel/$(TOPLEVEL).v
 	echo "" >> $@
 	cat $< >> $@
 
-$(PWD)/../../chisel/$(TOPLEVEL).v:  $(PWD)/../../chisel/src/main/scala/gbvga/memvga.scala\
-									$(PWD)/../../chisel/src/main/scala/gbvga/hvsync.scala\
+$(PWD)/../../chisel/$(TOPLEVEL).v: $(PWD)/../../chisel/src/main/scala/gbvga/gbvga.scala\
 									$(PWD)/../../chisel/src/main/scala/gbvga/gbwrite.scala\
+									$(PWD)/../../chisel/src/main/scala/gbvga/memvga.scala\
+									$(PWD)/../../chisel/src/main/scala/gbvga/hvsync.scala\
 									$(PWD)/../../chisel/src/main/scala/gbvga/gbinclude.scala
 	cd $(PWD)/../../chisel/; sbt "runMain gbvga.$(TOPLEVEL)Driver"
 

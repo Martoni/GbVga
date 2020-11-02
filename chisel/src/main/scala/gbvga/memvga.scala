@@ -84,7 +84,21 @@ class MemVga extends Module {
   /* Vga colors */
   io.vga_color := VGA_BLACK
   when(hvsync.io.display_on && (state===sPixInc)){
-    io.vga_color   := GbColors(io.mem_data)
+//    io.vga_color := GbColors(io.mem_data)
+    switch(io.mem_data) {
+      is("b00".U) {
+        io.vga_color := GB_GREEN0
+      }
+      is("b01".U) {
+        io.vga_color := GB_GREEN1
+      }
+      is("b10".U) {
+        io.vga_color := GB_GREEN2
+      }
+      is("b11".U) {
+        io.vga_color := GB_GREEN3
+      }
+    }
   }
 
   /* Memory interface */

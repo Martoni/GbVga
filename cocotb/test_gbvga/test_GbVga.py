@@ -18,11 +18,10 @@ from cocotb.triggers import RisingEdge
 from cocotb.triggers import FallingEdge
 from cocotb.triggers import ClockCycles
 from gbscreenview import GbScreenView
-sys.path.append("../test_gbwrite/")
-from image_test import mem_image
 
 class TestGbVga(object):
     CLK_PER = (40, "ns") #25Mhz
+    CSV_FILENAME = "../../assets/screenshoot/beautyandbeast.csv"
 
     def __init__(self, dut):
         self._dut = dut
@@ -30,9 +29,6 @@ class TestGbVga(object):
         self.clk = dut.clock
         self.rst = dut.reset
         self._gsv = GbScreenView()
-        self.mem_addr = dut.io_mem_addr
-        self.mem_data = dut.io_mem_data
-        self.mem_read = dut.io_mem_read
         self._clock_thread = cocotb.fork(
                 Clock(self.clk, *self.CLK_PER).start())
         self._td = cocotb.fork(
@@ -57,19 +53,20 @@ class TestGbVga(object):
             await Timer(*step)
             dtime += 1
 
-    async def memory_reader(self, mem_image):
-        while True:
-            await RisingEdge(self.clk)
-            if self.mem_read.value.integer > 0:
-                self.mem_data <= mem_image[self.mem_addr.value.integer]
-            else:
-                self.mem_data <= 0
-
     async def reset(self):
-        self._mem_reader = cocotb.fork(self.memory_reader(mem_image))
         self.rst <= 1
         await Timer(100, units="ns")
         self.rst <= 0
+        # gb input
+        self._gbsigs = cocotb.fork(self._gsv.gen_waves(
+                        self._dut.io_gb_hsync,
+                        self._dut.io_gb_vsync,
+                        self._dut.io_gb_clk,
+                        self._dut.io_gb_data,
+                        self.log,
+                        self.CSV_FILENAME))
+
+        # vga output
         self._vga_render = cocotb.fork(self._gsv.vga_2_image(
             self.clk, self._dut.io_vga_hsync,
                       self._dut.io_vga_vsync,
@@ -77,6 +74,7 @@ class TestGbVga(object):
                       self._dut.io_vga_color_green,
                       self._dut.io_vga_color_blue,
                       self.rst))
+
         await RisingEdge(self.clk)
 
 @cocotb.test()
@@ -92,4 +90,3 @@ async def one_frame(dut):
         vi.write("vga_image = ")
         vi.write("{}".format(tgv._gsv.vga_image))
     tgv._gsv.vga_show()
-

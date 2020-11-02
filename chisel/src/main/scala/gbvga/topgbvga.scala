@@ -44,7 +44,6 @@ class TopGbVga extends RawModule {
     vga_color.red   := gbVga.io.vga_color.red
     vga_color.green := gbVga.io.vga_color.green
     vga_color.blue  := gbVga.io.vga_color.blue
-
   }
 }
 

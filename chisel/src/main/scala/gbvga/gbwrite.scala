@@ -12,17 +12,13 @@ class GbWrite (val datawidth: Int = 2,
                val aformal: Boolean = false) extends Module {//with Formal {
   val io = IO(new Bundle {
     /* GameBoy input */
-//    val gb.hsync    = Input(Bool())
-//    val gb.vsync    = Input(Bool())
-//    val gb.clk      = Input(Bool())
-//    val gb.data     = Input(UInt(2.W))
     val gb = Input(new Gb())
     /* Memory write */
     val Maddr  = Output(UInt((log2Ceil(GBWIDTH*GBHEIGHT)).W))
     val Mdata  = Output(UInt(datawidth.W))
     val Mwrite = Output(Bool())
     /* debug */
-    val countcol = Output(UInt(32.W))
+    val countcol = if(debug_simu) Some(Output(UInt(32.W))) else None
   })
 
   val shsync = if(debug_simu) ShiftRegister(io.gb.hsync,2) else io.gb.hsync
@@ -35,9 +31,9 @@ class GbWrite (val datawidth: Int = 2,
   val pixelCount = RegInit((GBHEIGHT*GBWIDTH).U)
 
   val countreg = RegInit(0.U(12.W))
-  if(debug_simu) {
-    io.countcol := pixelCount
-  }
+//  if(debug_simu) {
+//    io.countcol := pixelCount
+//  }
 
   val pixel = RegInit(0.U(datawidth.W))
 
