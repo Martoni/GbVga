@@ -4,8 +4,6 @@ import chisel3._
 import chisel3.util._
 import chisel3.stage.{ChiselGeneratorAnnotation, ChiselStage}
 
-import GbConst._
-
 class GbVga extends Module {
   val io = IO(new Bundle {
     /* Game boy input signals */

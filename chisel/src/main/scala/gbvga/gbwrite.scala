@@ -5,11 +5,9 @@ import chisel3.util._
 import chisel3.formal._
 import chisel3.stage.{ChiselGeneratorAnnotation, ChiselStage}
 
-import GbConst._
-
 class GbWrite (val datawidth: Int = 2,
                val debug_simu: Boolean = true,
-               val aformal: Boolean = false) extends Module {//with Formal {
+               val aformal: Boolean = false) extends Module with GbConst {//with Formal {
   val io = IO(new Bundle {
     /* GameBoy input */
     val gb = Input(new Gb())

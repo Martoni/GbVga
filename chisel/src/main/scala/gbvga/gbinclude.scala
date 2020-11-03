@@ -17,7 +17,7 @@ class Gb extends Bundle {
   val data  = UInt(2.W)
 }
 
-object GbConst {
+trait GbConst { self: RawModule =>
   val GBWIDTH   = 160
   val GBHEIGHT = 144
 

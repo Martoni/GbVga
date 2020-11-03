@@ -11,8 +11,6 @@ import chisel3.util._
 import chisel3.formal.Formal
 import chisel3.stage.{ChiselGeneratorAnnotation, ChiselStage}
 
-import GbConst._
-
 class HVSync extends Module { // with Formal { scala version problem
   val io = IO(new Bundle {
      val hsync = Output(Bool())
