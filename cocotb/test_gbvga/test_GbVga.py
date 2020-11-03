@@ -28,7 +28,7 @@ class TestGbVga(object):
         self.log = dut._log
         self.clk = dut.clock
         self.rst = dut.reset
-        self._gsv = GbScreenView()
+        self._gsv = GbScreenView(log=dut._log)
         self._clock_thread = cocotb.fork(
                 Clock(self.clk, *self.CLK_PER).start())
         self._td = cocotb.fork(
@@ -85,7 +85,12 @@ async def one_frame(dut):
     await Timer(1)
     tgv.log.info("Running test {}".format(fname))
     await tgv.reset()
-    await FallingEdge(dut.io_vga_vsync)
+    await FallingEdge(dut.io_gb_vsync)
+    tgv.log.info("falling edge of gb_sync")
+    await FallingEdge(dut.io_gb_vsync)
+    tgv.log.info("falling edge of gb_sync")
+    await FallingEdge(dut.io_gb_vsync)
+    tgv.log.info("falling edge of gb_sync")
     with open("vga_image.py", "w") as vi:
         vi.write("vga_image = ")
         vi.write("{}".format(tgv._gsv.vga_image))

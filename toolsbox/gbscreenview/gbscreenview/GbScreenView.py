@@ -36,9 +36,13 @@ class GbScreenView(object):
     # Black
     #COLOR = ["#000000", "#555555", "#AAAAAA", "#FFFFFF"]
 
-    def __init__(self):
+    def __init__(self, log=None):
         self.image = []
         self.vga_image = None
+        if log is None:
+            self._log = logging
+        else:
+            self._log = log
 
     def _wait_vsync(self, freader):
         # Find rising edge of vsync
@@ -85,18 +89,24 @@ class GbScreenView(object):
         old_hsync = 0
         while True:
             await RisingEdge(clk25)
-            print("DEBUG: line {} column {}".format(linecount, colcount))
             display = ((colcount >= VGA.H_BACK) and
                             (colcount <= (VGA.H_BACK + VGA.H_DISPLAY)))
             if display:
-                self.vga_image[linecount].append((red.value.integer,
-                                                  green.value.integer,
-                                                  blue.value.integer))
+                if len(self.vga_image[linecount]) <= colcount: 
+                    self.vga_image[linecount].append((red.value.integer,
+                                                      green.value.integer,
+                                                      blue.value.integer))
+                else:
+                    self.vga_image[linecount][colcount] = (red.value.integer,
+                                                           green.value.integer,
+                                                           blue.value.integer)
+
             if hsync.value.integer == 0:
                 colcount = 0
             else:
                 colcount += 1
             if old_hsync == 0 and (hsync.value.integer == 1):
+                self._log.info("line {}".format(linecount))
                 self.vga_image.append([])
                 linecount += 1
 

@@ -4,7 +4,7 @@ import chisel3._
 import chisel3.util._
 import chisel3.stage.{ChiselGeneratorAnnotation, ChiselStage}
 
-class GbVga extends Module {
+class GbVga extends Module with GbConst {
   val io = IO(new Bundle {
     /* Game boy input signals */
     val gb = Input(new Gb())
@@ -24,25 +24,18 @@ class GbVga extends Module {
   io.vga_vsync := memvga.io.vga_vsync
   io.vga_color <> memvga.io.vga_color
 
-  /* XXX connexion */
-  val buffer_reg = RegInit(0.U(2.W))
-  when(gbwrite.io.Mwrite) {
-    buffer_reg := gbwrite.io.Mdata
-  }
-  memvga.io.mem_data := buffer_reg
-
   /* dual port ram connection */
-//  val mem = Mem(GBWIDTH*GBHEIGHT, UInt(2.W))
-//  when(gbwrite.io.Mwrite) {
-//    mem(gbwrite.io.Maddr) := gbwrite.io.Mdata
-//  }
-//  val last_read_value = RegInit(0.U(2.W))
-//  when(memvga.io.mem_read) {
-//    memvga.io.mem_data := RegNext(mem(memvga.io.mem_addr))
-//    last_read_value := memvga.io.mem_data
-//  }.otherwise {
-//    memvga.io.mem_data := last_read_value
-//  }
+  val mem = Mem(GBWIDTH*GBHEIGHT, UInt(2.W))
+  when(gbwrite.io.Mwrite) {
+    mem(gbwrite.io.Maddr) := gbwrite.io.Mdata
+  }
+  val last_read_value = RegInit(0.U(2.W))
+  when(memvga.io.mem_read) {
+    memvga.io.mem_data := RegNext(mem(memvga.io.mem_addr))
+    last_read_value := memvga.io.mem_data
+  }.otherwise {
+    memvga.io.mem_data := last_read_value
+  }
 
 }
 

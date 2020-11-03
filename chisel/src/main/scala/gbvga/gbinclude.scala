@@ -25,7 +25,7 @@ trait GbConst { self: RawModule =>
   def fallingedge(x: Bool) = !x && RegNext(x)
 
                             /* "#9BBC0F"*/
-val GB_GREEN0 = (new VgaColors()).Lit(_.red   -> "h26".U(6.W),
+ val GB_GREEN0 = (new VgaColors()).Lit(_.red   -> "h26".U(6.W),
                                       _.green -> "h2F".U(6.W),
                                       _.blue  -> "h03".U(6.W))
 
