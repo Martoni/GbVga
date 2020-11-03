@@ -18,9 +18,9 @@ class TopGbVga extends RawModule {
   val gb = IO(Input(new Gb()))
 
   /* Vga */
-  val hsync = IO(Output(Bool()))
-  val vsync = IO(Output(Bool()))
-  val vga_color = IO(new VgaColors()) 
+  val vga_hsync = IO(Output(Bool()))
+  val vga_vsync = IO(Output(Bool()))
+  val vga_color = IO(Output(new VgaColors()))
 
   withClockAndReset(clock, ~resetn) {
     /* Activate pll at start*/
@@ -38,12 +38,10 @@ class TopGbVga extends RawModule {
     gbVga.io.gb.vsync := svsync
     gbVga.io.gb.clk   := sclk
     gbVga.io.gb.data  := sdata
-    hsync := gbVga.io.vga_hsync
-    vsync := gbVga.io.vga_vsync
 
-    vga_color.red   := gbVga.io.vga_color.red
-    vga_color.green := gbVga.io.vga_color.green
-    vga_color.blue  := gbVga.io.vga_color.blue
+    vga_hsync := gbVga.io.vga_hsync
+    vga_vsync := gbVga.io.vga_vsync
+    vga_color   := gbVga.io.vga_color
   }
 }
 
