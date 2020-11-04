@@ -21,9 +21,15 @@ class MemVga extends Module with GbConst {
   val vga_height = GBHEIGHT*2
   val vga_width = GBWIDTH*2
 
+
   val hvsync = Module(new HVSync()) // Synchronize VGA module
   io.vga_hsync := hvsync.io.hsync
   io.vga_vsync := hvsync.io.vsync
+
+  val xpos = (hvsync.H_DISPLAY - GBWIDTH.U)/2.U
+  val ypos = (hvsync.V_DISPLAY - GBHEIGHT.U)/2.U
+
+  val gb_display = hvsync.io.display_on & (hvsync.io.vpos > ypos) & (hvsync.io.hpos > xpos)
 
   val gblines = RegInit(0.U((log2Ceil(GBWIDTH)).W))
   val gbcols = RegInit(0.U((log2Ceil(GBHEIGHT)).W))
@@ -35,7 +41,7 @@ class MemVga extends Module with GbConst {
 
   switch(state) {
     is(sInit) {
-      when(hvsync.io.display_on){
+      when(gb_display){
         state := sPixInc
       }
     }
@@ -64,7 +70,7 @@ class MemVga extends Module with GbConst {
   }
 
   /* pixel count */
-  when(hvsync.io.display_on){
+  when(gb_display){
     when(state===sPixInc) {
       gbpix := gbpix + 1.U
       gbcols := gbcols + 1.U
@@ -82,22 +88,8 @@ class MemVga extends Module with GbConst {
 
   /* Vga colors */
   io.vga_color := VGA_BLACK
-  when(hvsync.io.display_on && (state===sPixInc)){
+  when(gb_display && (state===sPixInc)){
     io.vga_color := GbColors(io.mem_data)
-//    switch(io.mem_data) {
-//      is("b00".U) {
-//        io.vga_color := GB_GREEN0
-//      }
-//      is("b01".U) {
-//        io.vga_color := GB_GREEN1
-//      }
-//      is("b10".U) {
-//        io.vga_color := GB_GREEN2
-//      }
-//      is("b11".U) {
-//        io.vga_color := GB_GREEN3
-//      }
-//    }
   }
 
   /* Memory interface */
