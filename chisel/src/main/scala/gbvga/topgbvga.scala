@@ -46,6 +46,7 @@ class TopGbVga extends RawModule {
 }
 
 object TopGbVgaDriver extends App {
+  println("Generate TopGbVga verilog")
   (new ChiselStage).execute(args,
     Seq(ChiselGeneratorAnnotation(() => new TopGbVga())))
 }

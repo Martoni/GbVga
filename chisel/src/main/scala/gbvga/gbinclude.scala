@@ -29,14 +29,14 @@ trait GbConst { self: RawModule =>
                                       _.green -> "h2F".U(6.W),
                                       _.blue  -> "h03".U(6.W))
 
-                          /* "#8BAC0F"*/
- val GB_GREEN1 = (new VgaColors()).Lit(_.red   -> "h1E".U(6.W),
-                                       _.green -> "h27".U(6.W),
-                                       _.blue  -> "h03".U(6.W))
                           /* "#306230"*/
- val GB_GREEN2 = (new VgaColors()).Lit(_.red   -> "h0C".U(6.W),
+ val GB_GREEN1 = (new VgaColors()).Lit(_.red   -> "h0C".U(6.W),
                                        _.green -> "h18".U(6.W),
                                        _.blue  -> "h0C".U(6.W))
+                          /* "#8BAC0F"*/
+ val GB_GREEN2 = (new VgaColors()).Lit(_.red   -> "h1E".U(6.W),
+                                       _.green -> "h27".U(6.W),
+                                       _.blue  -> "h03".U(6.W))
                           /*"#0F380F"*/
  val GB_GREEN3 = (new VgaColors()).Lit(_.red   -> "h03".U(6.W),
                                        _.green -> "h0E".U(6.W),
