@@ -17,9 +17,12 @@ endif
 
 export COCOTB_REDUCED_LOG_FMT=1
 
-TOPLEVEL=MemVga
+#TOPLEVEL=MemVga
+TOPLEVEL=MemVgaZoom
+#MAINSCALAMODULE=memvgazoom.scala
+MAINSCALAMODULE=memvgazoom.scala
+MODULE=test_MemVga
 VERILOG_SOURCES = $(PWD)/$(TOPLEVEL)_withtp.v
-MODULE=test_$(TOPLEVEL)
 include $(shell cocotb-config --makefile)/Makefile.sim
 
 $(PWD)/$(TOPLEVEL)_withtp.v: $(PWD)/../../chisel/$(TOPLEVEL).v
@@ -27,7 +30,9 @@ $(PWD)/$(TOPLEVEL)_withtp.v: $(PWD)/../../chisel/$(TOPLEVEL).v
 	echo "" >> $@
 	cat $< >> $@
 
-$(PWD)/../../chisel/$(TOPLEVEL).v:  $(PWD)/../../chisel/src/main/scala/gbvga/memvga.scala\
+
+
+$(PWD)/../../chisel/$(TOPLEVEL).v: $(PWD)/../../chisel/src/main/scala/gbvga/$(MAINSCALAMODULE)\
 									$(PWD)/../../chisel/src/main/scala/gbvga/hvsync.scala\
 									$(PWD)/../../chisel/src/main/scala/gbvga/gbinclude.scala
 	cd $(PWD)/../../chisel/; sbt "runMain gbvga.$(TOPLEVEL)Driver"

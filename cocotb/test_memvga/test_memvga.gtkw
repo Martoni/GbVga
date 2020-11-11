@@ -1,0 +1,43 @@
+[*]
+[*] GTKWave Analyzer v3.3.98 (w)1999-2019 BSI
+[*] Wed Nov 11 13:56:01 2020
+[*]
+[dumpfile] "/media/stockage/projets/GbVga/cocotb/test_memvga/dump.vcd"
+[dumpfile_mtime] "Wed Nov 11 12:15:21 2020"
+[dumpfile_size] 173080572
+[savefile] "/media/stockage/projets/GbVga/cocotb/test_memvga/test_memvga.gtkw"
+[timestart] 5322313
+[size] 1920 1030
+[pos] -1 -1
+*-4.542737 5322401 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] top.
+[treeopen] top.MemVgaZoom.
+[sst_width] 220
+[signals_width] 214
+[sst_expanded] 1
+[sst_vpaned_height] 302
+@28
+top.clock
+top.reset
+@201
+-mem
+@22
+top.io_mem_addr[14:0]
+@28
+top.io_mem_data[1:0]
+@200
+-vga
+@22
+top.io_vga_color_blue[5:0]
+top.io_vga_color_green[5:0]
+top.io_vga_color_red[5:0]
+@28
+top.io_vga_hsync
+top.io_vga_vsync
+@22
+top.MemVgaZoom.gblines[7:0]
+@24
+top.MemVgaZoom.gbpix[14:0]
+top.MemVgaZoom.gbcols[7:0]
+[pattern_trace] 1
+[pattern_trace] 0

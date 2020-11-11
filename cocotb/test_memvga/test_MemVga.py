@@ -61,7 +61,10 @@ class TestMemVga(object):
         while True:
             await RisingEdge(self.clk)
             if self.mem_read.value.integer > 0:
-                self.mem_data <= mem_image[self.mem_addr.value.integer]
+                try:
+                    self.mem_data <= mem_image[self.mem_addr.value.integer]
+                except KeyError as err:
+                    self.mem_data <= 0
             else:
                 self.mem_data <= 0
 
