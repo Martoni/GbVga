@@ -19,7 +19,8 @@ class GbVga extends Module with GbConst {
   gbwrite.io.gb := io.gb
 
   /* Mem Vga */
-  val memvga = Module(new MemVga())
+//  val memvga = Module(new MemVga())
+  val memvga = Module(new MemVgaZoom())
   io.vga_hsync := memvga.io.vga_hsync
   io.vga_vsync := memvga.io.vga_vsync
   io.vga_color <> memvga.io.vga_color

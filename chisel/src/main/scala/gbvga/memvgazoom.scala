@@ -29,8 +29,8 @@ class MemVgaZoom extends Module with GbConst {
   io.vga_hsync := hvsync.io.hsync
   io.vga_vsync := hvsync.io.vsync
 
-  val wpix = 2
-  val hpix = 2
+  val wpix = 3
+  val hpix = 3
 
   val xpos = (hvsync.H_DISPLAY - (wpix*GBWIDTH).U)/2.U
   val ypos = (hvsync.V_DISPLAY - (hpix*GBHEIGHT).U)/2.U
@@ -44,8 +44,8 @@ class MemVgaZoom extends Module with GbConst {
   val sInit :: sPixInc :: sLineInc :: sWait :: Nil = Enum(4)
   val state = RegInit(sInit)
 
-  val newgbline = (hvsync.io.hpos(0) === (hpix-1).U)
-  val newgbcol = (hvsync.io.vpos(0) === (wpix-1).U)
+  val newgbline = ((hvsync.io.hpos % hpix.U) === (hpix-1).U)
+  val newgbcol = ((hvsync.io.vpos % wpix.U) === (wpix-1).U)
 
   switch(state) {
     is(sInit) {
