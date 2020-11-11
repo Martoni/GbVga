@@ -51,7 +51,6 @@ class GbWrite (val datawidth: Int = 2,
   /* read pixel on sclk fall */
   io.Mwrite := false.B
   when(fallingedge(sclk)) {
-    pixel := sdata
     pixelCount := pixelCount + 1.U
     io.Mwrite := true.B
   }
@@ -67,6 +66,7 @@ class GbWrite (val datawidth: Int = 2,
 //  }
 
   io.Maddr := pixelCount
+  pixel := sdata
   io.Mdata := pixel
 }
 

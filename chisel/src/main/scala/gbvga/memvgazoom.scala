@@ -105,7 +105,7 @@ class MemVgaZoom extends Module with GbConst {
   }
 
   /* Memory interface */
-  io.mem_addr  := gbpix
+  io.mem_addr  := gbpix + 1.U
   io.mem_read  := true.B
 
 }
