@@ -12,7 +12,7 @@ import chisel3.util._
 import chisel3.stage.{ChiselGeneratorAnnotation, ChiselStage}
 
 
-class MemVgaZoom (val stripped: Boolean = true) extends Module with GbConst {
+class MemVgaZoom (val stripped: Boolean = false) extends Module with GbConst {
   val io = IO(new Bundle {
     /* memory read interface */
     val mem_addr  = Output(UInt((log2Ceil(GBWIDTH*GBHEIGHT)).W))
