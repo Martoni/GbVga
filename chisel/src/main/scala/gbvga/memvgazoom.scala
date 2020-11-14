@@ -12,7 +12,7 @@ import chisel3.util._
 import chisel3.stage.{ChiselGeneratorAnnotation, ChiselStage}
 
 
-class MemVgaZoom extends Module with GbConst {
+class MemVgaZoom (val stripped: Boolean = true) extends Module with GbConst {
   val io = IO(new Bundle {
     /* memory read interface */
     val mem_addr  = Output(UInt((log2Ceil(GBWIDTH*GBHEIGHT)).W))
@@ -100,8 +100,18 @@ class MemVgaZoom extends Module with GbConst {
 
   /* Vga colors */
   io.vga_color := VGA_BLACK
-  when(gb_display && (state===sPixInc)){
-    io.vga_color := GbColors(io.mem_data)
+  if(stripped) {
+    when(gb_display && (state===sPixInc)){
+      when(((hvsync.io.hpos % 3.U) === 0.U) || (hvsync.io.vpos % 3.U === 0.U)) {
+        io.vga_color := GbColors("b00".U)
+      }.otherwise {
+        io.vga_color := GbColors(io.mem_data)
+      }
+    }
+  } else {
+    when(gb_display && (state===sPixInc)){
+      io.vga_color := GbColors(io.mem_data)
+    }
   }
 
   /* Memory interface */
