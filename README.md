@@ -1,7 +1,7 @@
 # GbVga
 VGA interface for Game boy 
 
-![Mario in VGA full screen](gbvga_mario_fullscreen.jpg/gbvga_mario_fullscreen.jpg)
+![Mario in VGA full screen](assets/videos/gbvga_mario_fullscreen.jpg)
 
 Clic on following image to see the video.
 
