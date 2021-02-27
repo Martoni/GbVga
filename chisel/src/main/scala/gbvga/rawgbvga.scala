@@ -6,7 +6,7 @@ package gbvga
 
 import chisel3._
 import chisel3.util._
-import chisel3.formal.Formal
+//import chisel3.formal.Formal
 import chisel3.stage.{ChiselGeneratorAnnotation, ChiselStage}
 
 class RawGbVga extends RawModule with GbConst {
