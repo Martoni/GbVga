@@ -1,0 +1,21 @@
+sampling freq : 16Mhz
+PulseView 0.4.1
+
+Libraries and features:
+  PulseView 0.4.1
+  Qt 5.11.3
+  glibmm 2.58.0
+  Boost 1_67
+  libsigrok 0.5.1/5:0:1 (rt: 0.5.1/5:0:1)
+   - glib 2.58.1 (rt: 2.58.3/5803:3)
+   - libzip 1.1.2
+   - libserialport 0.1.1/1:0:1 (rt: 0.1.1/1:0:1)
+   - libusb-1.0 1.0.22.11312 API 0x01000106
+   - libftdi 1.4
+   - Host x86_64-pc-linux-gnu, little-endian
+   - SCPI backends TCP, RPC, serial, USBTMC
+  libsigrokdecode 0.5.2/6:0:2 (rt: 0.5.2/6:0:2)
+   - glib 2.58.1 (rt: 2.58.3/5803:3)
+   - Python 3.7.1 / 0x30701f0 (API 1013, ABI 3)
+   - Host x86_64-pc-linux-gnu, little-endian
+
