@@ -31,5 +31,5 @@ def main(argv):
             csv = arg
 
     gsv = GbScreenView()
-    gsv.read_csv(csv)
+    gsv.csv_2_image(csv)
     gsv.show()
