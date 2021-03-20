@@ -148,6 +148,7 @@ class GbScreenView(object):
                              (i*square+(square-1), j*square+(square-1))],
                              fill=color[int(self.image[j][i], 2)])
         im.show()
+        im.save("test.png", "PNG")
 
     def vga_show(self):
         if self.vga_image is None:
