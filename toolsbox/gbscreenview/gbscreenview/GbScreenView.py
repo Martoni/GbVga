@@ -164,6 +164,7 @@ class GbScreenView(object):
                                                      pix[2] << 2)
                 d.rectangle([(j, i), (j, i)], fill=color)
         im.show()
+        im.save("test.png", "PNG")
 
 
     async def gen_waves(self, shsync, svsync, sclk, sdata, log, filename):
