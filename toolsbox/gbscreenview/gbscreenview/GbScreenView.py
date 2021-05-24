@@ -79,6 +79,12 @@ class GbScreenView(object):
                     line.append(self._wait_clk_fall(freader))
                 self.image.append(line)
 
+    def read_signal_integer(self, signal):
+        try:
+            return signal.value.integer
+        except ValueError:
+            return 0
+
     async def vga_2_image(self, clk25, hsync, vsync, red, green, blue, reset):
         """ Thread that read image from vga signals """
         colcount = 0
@@ -93,13 +99,13 @@ class GbScreenView(object):
                             (colcount <= (VGA.H_BACK + VGA.H_DISPLAY)))
             if display:
                 if len(self.vga_image[linecount]) <= colcount: 
-                    self.vga_image[linecount].append((red.value.integer,
-                                                      green.value.integer,
-                                                      blue.value.integer))
+                    self.vga_image[linecount].append((self.read_signal_integer(red),
+                                                      self.read_signal_integer(green),
+                                                      self.read_signal_integer(blue)))
                 else:
-                    self.vga_image[linecount][colcount] = (red.value.integer,
-                                                           green.value.integer,
-                                                           blue.value.integer)
+                    self.vga_image[linecount][colcount] = (self.read_signal_integer(red),
+                                                           self.read_signal_integer(green),
+                                                           self.read_signal_integer(blue))
 
             if hsync.value.integer == 0:
                 colcount = 0

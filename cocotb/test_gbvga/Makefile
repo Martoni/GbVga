@@ -1,6 +1,6 @@
 
-SIM=verilator
-#SIM=icarus
+#SIM=verilator
+SIM=icarus
 
 # Added in head `timescale ...
 VL_TIME_UNIT="1ns"
