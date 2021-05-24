@@ -41,7 +41,7 @@ class TopGbVga extends RawModule {
 
     vga_hsync := gbVga.io.vga_hsync
     vga_vsync := gbVga.io.vga_vsync
-    vga_color   := gbVga.io.vga_color
+    vga_color := gbVga.io.vga_color
   }
 }
 
