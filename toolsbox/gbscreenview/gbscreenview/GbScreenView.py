@@ -173,7 +173,7 @@ class GbScreenView(object):
         im.save("test.png", "PNG")
 
 
-    async def gen_waves(self, shsync, svsync, sclk, sdata, log, filename):
+    async def gen_waves(self, shsync, svsync, sclk, sdata, log, filename, step=None):
         with open(filename) as csvfile:
             freader = csv.reader(csvfile, delimiter=',')
             print("titles")
@@ -184,13 +184,20 @@ class GbScreenView(object):
             sdata <= int(d1)*2 + int(d0)
             sclk <= int(clk)
             oldtime = int(float(curtime)*1.e9)
+            if step is not None:
+                oldtime = 0
+                waitime = step
             for curtime, hsync, d1, clk, d0, vsync in freader:
                 newtime = int(float(curtime)*1.e9)
-                waitime = newtime - oldtime
+                if step is None:
+                    waitime = newtime - oldtime
                 await Timer(waitime, units="ns")
                 shsync <= int(hsync)
                 svsync <= int(vsync)
                 sdata <= int(d1)*2 + int(d0)
                 sclk <= int(clk)
-                oldtime = int(float(curtime)*1.e9)
+                if step is None:
+                    oldtime = int(float(curtime)*1.e9)
+                else:
+                    oldtime += step
 

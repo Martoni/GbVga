@@ -89,7 +89,8 @@ class TestGbWrite(object):
                         self._dut.io_gb_clk,
                         self._dut.io_gb_data,
                         self.log,
-                        self.CSV_FILENAME))
+                        self.CSV_FILENAME,
+                        step = 40.0))
 
         await RisingEdge(self.clk)
 
