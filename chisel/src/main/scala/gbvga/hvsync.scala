@@ -11,7 +11,22 @@ import chisel3.util._
 //import chisel3.formal.Formal
 import chisel3.stage.{ChiselGeneratorAnnotation, ChiselStage}
 
-class HVSync extends Module { // with Formal { scala version problem
+case class VideoParams(
+  val H_DISPLAY: Int,// horizontal display width
+  val H_FRONT: Int,  // front porch
+  val H_SYNC: Int,   // sync width
+  val H_BACK: Int,   // back porch
+  val V_SYNC: Int,   // sync width
+  val V_BACK: Int,   // back porch
+  val V_TOP: Int,    // top border
+  val V_DISPLAY: Int,// vertical display width
+  val V_BOTTOM: Int  // bottom border
+)
+
+class HVSync(val vp: VideoParams = VideoParams(
+    H_DISPLAY = 640, H_FRONT = 8, H_SYNC = 96, H_BACK = 40,
+    V_SYNC = 4,  V_BACK = 25,   V_TOP = 4, V_DISPLAY = 480, V_BOTTOM = 14
+    )) extends Module { // with Formal { scala version problem
   val io = IO(new Bundle {
      val hsync = Output(Bool())
      val vsync = Output(Bool())
@@ -20,21 +35,24 @@ class HVSync extends Module { // with Formal { scala version problem
      val vpos = Output(UInt(9.W))
   })
 
-  val H_DISPLAY = 640.U  // horizontal display width
-  val H_FRONT = 8.U      // front porch
-  val H_SYNC = 96.U      // sync width
-  val H_BACK = 40.U      // back porch
-  val V_SYNC = 4.U       // sync width
-  val V_BACK = 25.U      // back porch
-  val V_TOP = 4.U        // top border
-  val V_DISPLAY = 480.U  // vertical display width
-  val V_BOTTOM = 14.U    // bottom border
+  val H_DISPLAY = vp.H_DISPLAY.U  // horizontal display width
+  val H_FRONT   = vp.H_FRONT.U    // front porch
+  val H_SYNC    = vp.H_SYNC.U     // sync width
+  val H_BACK    = vp.H_BACK.U     // back porch
+  val V_SYNC    = vp.V_SYNC.U     // sync width
+  val V_BACK    = vp.V_BACK.U     // back porch
+  val V_TOP     = vp.V_TOP.U      // top border
+  val V_DISPLAY = vp.V_DISPLAY.U  // vertical display width
+  val V_BOTTOM  = vp.V_BOTTOM.U   // bottom border
   val H_SYNC_START = H_DISPLAY + H_FRONT
-  val H_SYNC_END = H_DISPLAY + H_FRONT + H_SYNC - 1.U
-  val H_MAX = H_DISPLAY + H_BACK + H_FRONT + H_SYNC - 1.U
+  val H_SYNC_END   = H_DISPLAY + H_FRONT + H_SYNC - 1.U
+  val H_MAX        = H_DISPLAY + H_BACK + H_FRONT + H_SYNC - 1.U
   val V_SYNC_START = V_DISPLAY + V_BOTTOM
-  val V_SYNC_END = V_DISPLAY + V_BOTTOM + V_SYNC - 1.U
-  val V_MAX = V_DISPLAY + V_TOP + V_BOTTOM + V_SYNC - 1.U
+  val V_SYNC_END   = V_DISPLAY + V_BOTTOM + V_SYNC - 1.U
+  val V_MAX        = V_DISPLAY + V_TOP + V_BOTTOM + V_SYNC - 1.U
+
+  println(s"H_DISPLAY $H_DISPLAY")
+  println(s"V_DISPLAY $V_DISPLAY")
 
   val vpos_count = RegInit(0.U(9.W))
   val hpos_count = RegInit(0.U(10.W))
