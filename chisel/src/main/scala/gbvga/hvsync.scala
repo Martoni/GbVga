@@ -27,12 +27,15 @@ class HVSync(val vp: VideoParams = VideoParams(
     H_DISPLAY = 640, H_FRONT = 8, H_SYNC = 96, H_BACK = 40,
     V_SYNC = 4,  V_BACK = 25,   V_TOP = 4, V_DISPLAY = 480, V_BOTTOM = 14
     )) extends Module { // with Formal { scala version problem
+
+  val hregsize = log2Ceil(vp.H_DISPLAY + vp.H_BACK + vp.H_FRONT  + vp.H_SYNC)
+  val vregsize = log2Ceil(vp.V_DISPLAY + vp.V_TOP  + vp.V_BOTTOM + vp.V_SYNC)
   val io = IO(new Bundle {
      val hsync = Output(Bool())
      val vsync = Output(Bool())
      val display_on = Output(Bool())
-     val hpos = Output(UInt(10.W))
-     val vpos = Output(UInt(9.W))
+     val hpos = Output(UInt(hregsize.W))
+     val vpos = Output(UInt(vregsize.W))
   })
 
   val H_DISPLAY = vp.H_DISPLAY.U  // horizontal display width
@@ -53,9 +56,11 @@ class HVSync(val vp: VideoParams = VideoParams(
 
   println(s"H_DISPLAY $H_DISPLAY")
   println(s"V_DISPLAY $V_DISPLAY")
+  println(s"hregsize $hregsize")
+  println(s"vregsize $vregsize")
 
-  val vpos_count = RegInit(0.U(9.W))
-  val hpos_count = RegInit(0.U(10.W))
+  val hpos_count = RegInit(0.U((hregsize).W))
+  val vpos_count = RegInit(0.U((vregsize).W))
   io.vpos := vpos_count
   io.hpos := hpos_count
 
