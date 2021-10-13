@@ -1,5 +1,5 @@
 # GbVga
-VGA interface for Game boy 
+VGA interface for Game boy. For tutorial, see the [Hackable magazine 39](https://connect.ed-diamond.com/hackable/hk-039/une-sortie-vga-pour-game-boy) (french).
 
 ![Mario in VGA full screen](assets/videos/gbvga_mario_fullscreen.jpg)
 
