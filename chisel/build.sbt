@@ -8,9 +8,9 @@ lazy val root = (project in file("."))
   .settings(
     name := "gbvga",
     libraryDependencies ++= Seq(
-      "edu.berkeley.cs" %% "chisel3" % "3.4.3",
-      "edu.berkeley.cs" %% "chiseltest" % "0.3.3" % "test",
-      "edu.berkeley.cs" %% "chisel-iotesters" % "1.3.+"
+      "edu.berkeley.cs" %% "chisel3" % "3.5.0-RC1",
+      "edu.berkeley.cs" %% "chiseltest" % "0.5.0-RC1" % "test",
+      "edu.berkeley.cs" %% "chisel-iotesters" % "1.5.+"
 //      "edu.berkeley.cs" %% "chisel-formal" % "0.1"
     ),
     scalacOptions ++= Seq(
@@ -22,6 +22,6 @@ lazy val root = (project in file("."))
       // Enables autoclonetype2 in 3.4.x (on by default in 3.5)
       "-P:chiselplugin:useBundlePlugin"
     ),
-    addCompilerPlugin("edu.berkeley.cs" % "chisel3-plugin" % "3.4.3" cross CrossVersion.full),
+    addCompilerPlugin("edu.berkeley.cs" % "chisel3-plugin" % "3.5.0-RC1" cross CrossVersion.full),
     addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.1" cross CrossVersion.full)
   )
