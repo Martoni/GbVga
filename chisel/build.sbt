@@ -1,17 +1,21 @@
 // See README.md for license details.
 
-scalaVersion     := "2.12.13"
-version          := "0.1.0"
+scalaVersion     := "2.13.8"
+version          := "0.1.1"
 organization     := "eu.fabienm"
+
+val majorChiselVersion = "3"
+val minorChiselVersion = "5.6"
+
+val chiselVersion = majorChiselVersion + "." + minorChiselVersion
+
 
 lazy val root = (project in file("."))
   .settings(
     name := "gbvga",
     libraryDependencies ++= Seq(
-      "edu.berkeley.cs" %% "chisel3" % "3.5.1",
-      "edu.berkeley.cs" %% "chiseltest" % "0.5.1" % "test",
-      "edu.berkeley.cs" %% "chisel-iotesters" % "1.5.+"
-//      "edu.berkeley.cs" %% "chisel-formal" % "0.1"
+      "edu.berkeley.cs" %% "chisel3" % chiselVersion,
+      "edu.berkeley.cs" %% "chiseltest" % ("0."+minorChiselVersion) % "test",
     ),
     scalacOptions ++= Seq(
       "-Xsource:2.11",
@@ -22,6 +26,5 @@ lazy val root = (project in file("."))
       // Enables autoclonetype2 in 3.4.x (on by default in 3.5)
       "-P:chiselplugin:useBundlePlugin"
     ),
-    addCompilerPlugin("edu.berkeley.cs" % "chisel3-plugin" % "3.5.1" cross CrossVersion.full),
-    addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.1" cross CrossVersion.full)
+    addCompilerPlugin("edu.berkeley.cs" % "chisel3-plugin" % chiselVersion cross CrossVersion.full),
   )
